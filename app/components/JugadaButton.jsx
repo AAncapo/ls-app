@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
 
 const toCurrency = (val) => {
   // eslint-disable-next-line no-undef
-  return Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   }).format(val);
 };
 
@@ -32,7 +32,7 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.6}
-      underlayColor={'#DDDDDD'}
+      underlayColor={"#DDDDDD"}
       style={styles.parent}
       onLongPress={() => {
         setToggleDel(!toggleDel);
@@ -40,11 +40,11 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
       <View
         style={{
           flexGrow: 1,
-          backgroundColor: jugada.premio > 0 ? '#FBE4CF' : 'white',
+          backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white",
           paddingHorizontal: 10,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexDirection: 'row',
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexDirection: "row",
           gap: 20,
         }}>
         {/* Numeros */}
@@ -52,26 +52,26 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
           <TextInput
             keyboardType="numeric"
             onEndEditing={(e) => {
-              const numsInput = e.nativeEvent.text.split(' ');
+              const numsInput = e.nativeEvent.text.split(/[\s,._\\-\\;]/);
               let nums = [];
               numsInput.forEach((n) => {
                 if (!isNaN(parseInt(n))) nums.push(parseInt(n));
               });
               setNums([...nums]);
             }}>
-            {_nums.join(' ')}
+            {_nums.join(" ")}
           </TextInput>
         </View>
 
-        <View style={{ flexDirection: 'row', flexGrow: 1 }}>
+        <View style={{ flexDirection: "row", flexGrow: 1 }}>
           {/* Parle&Centenas */}
           <View
             style={{
-              opacity: type !== 'BOLA' ? 100 : 0,
-              pointerEvents: type !== 'BOLA' ? 'auto' : 'none',
-              width: type !== 'BOLA' ? 30 : 0,
-              flexDirection: 'row',
-              alignItems: 'center',
+              opacity: type !== "BOLA" ? 100 : 0,
+              pointerEvents: type !== "BOLA" ? "auto" : "none",
+              width: type !== "BOLA" ? 30 : 0,
+              flexDirection: "row",
+              alignItems: "center",
               gap: 2,
             }}>
             <Text>$</Text>
@@ -82,17 +82,17 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                 const userInput = parseFloat(e.nativeEvent.text);
                 if (!isNaN(userInput)) setDineroParlcent(userInput);
               }}>
-              {dineroParlcent > 0 ? dineroParlcent : ''}
+              {dineroParlcent > 0 ? dineroParlcent : ""}
             </TextInput>
           </View>
           {/* Fijos&Coridos */}
           <View
             style={{
-              opacity: type === 'BOLA' ? 100 : 0,
-              pointerEvents: type === 'BOLA' ? 'auto' : 'none',
-              width: type === 'BOLA' ? 30 : 0,
-              flexDirection: 'row',
-              alignItems: 'center',
+              opacity: type === "BOLA" ? 100 : 0,
+              pointerEvents: type === "BOLA" ? "auto" : "none",
+              width: type === "BOLA" ? 30 : 0,
+              flexDirection: "row",
+              alignItems: "center",
               gap: 10,
             }}>
             <View style={styles.currency}>
@@ -104,7 +104,7 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                   const userInput = parseFloat(e.nativeEvent.text);
                   if (!isNaN(userInput)) setDineroFijo(userInput);
                 }}>
-                {dineroFijo > 0 ? dineroFijo : ''}
+                {dineroFijo > 0 ? dineroFijo : ""}
               </TextInput>
             </View>
             <View style={styles.currency}>
@@ -116,7 +116,7 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                   const userInput = parseFloat(e.nativeEvent.text);
                   if (!isNaN(userInput)) setDineroCorrido(userInput);
                 }}>
-                {dineroCorrido > 0 ? dineroCorrido : ''}
+                {dineroCorrido > 0 ? dineroCorrido : ""}
               </TextInput>
             </View>
           </View>
@@ -124,7 +124,7 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
         {/* Premio */}
         <View>
           <Text>Premio</Text>
-          <Text>{jugada.premio > 0 ? `${toCurrency(jugada.premio)}` : '--'}</Text>
+          <Text>{jugada.premio > 0 ? `${toCurrency(jugada.premio)}` : "--"}</Text>
         </View>
         {/* Jugador */}
         <TextInput
@@ -142,14 +142,14 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
           deleteJugada(jugada.id);
         }}
         style={{
-          backgroundColor: '#BA3351',
-          position: 'absolute',
+          backgroundColor: "#BA3351",
+          position: "absolute",
           opacity: toggleDel ? 100 : 0,
-          pointerEvents: toggleDel ? 'auto' : 'none',
+          pointerEvents: toggleDel ? "auto" : "none",
           flexGrow: 1,
           width: 100,
           height: 50,
-          justifyContent: 'center',
+          justifyContent: "center",
         }}>
         <Text style={styles.delete_text}>BORRAR</Text>
       </TouchableOpacity>
@@ -160,23 +160,23 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
 const styles = StyleSheet.create({
   parent: {
     minHeight: 50,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 2,
   },
   container: {
     flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
     gap: 20,
   },
   currency: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 2,
   },
   numbers: {
@@ -184,9 +184,9 @@ const styles = StyleSheet.create({
   },
   delete_text: {
     fontSize: 20,
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
