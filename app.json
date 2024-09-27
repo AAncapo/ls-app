@@ -2,7 +2,7 @@
   "expo": {
     "name": "ls-app",
     "slug": "ls-app",
-    "scheme":"lsapp",
+    "scheme": "lsapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,6 +26,11 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "651e2735-7a3d-459f-8311-61565b115b04"
+      }
+    }
   }
 }
