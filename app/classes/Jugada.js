@@ -1,30 +1,30 @@
-import genId from '../libs/random-generator';
-import { getDatetimeObject } from '../libs/datetime-parser';
+import genId from "../libs/random-generator";
+import { getDatetime } from "../libs/datetime-parser";
 
 class Jugada {
-  id = '';
-  type = 'BOLA';
+  id = "";
+  type = "BOLA";
   numeros = [];
-  jugador = '';
+  jugador = "";
   dinero_fijo = 0.0;
   dinero_corrido = 0.0;
   dinero_parlcent = 0.0;
   premio = 0.0;
-  creado = '';
+  creado = "";
 
   constructor(
     type,
-    id = '',
+    id = "",
     numeros = [],
-    jugador = '',
+    jugador = "",
     dinero_fijo = 0.0,
     dinero_corrido = 0.0,
     dinero_parlcent = 0.0,
     premio = 0.0,
-    creado = '',
+    creado = "",
   ) {
-    this.id = id !== '' ? id : genId();
-    this.creado = creado !== '' ? creado : getDatetimeObject();
+    this.id = id !== "" ? id : genId();
+    this.creado = creado !== "" ? creado : getDatetime();
 
     this.type = type;
     this.numeros = numeros;

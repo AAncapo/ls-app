@@ -1,61 +1,73 @@
-const url = 'https://jsonblob.com/api/jsonBlob/1285329984779313152';
+import { IS_DEVELOPMENT } from "../constants";
+
+const PRODUCTION_URL = "https://jsonblob.com/api/jsonBlob/1285329984779313152";
+const DEVELOPMENT_URL = "https://jsonblob.com/api/jsonBlob/1290330915019284480";
 
 const setData = async (data) => {
-  try {
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Transfer-Encoding': 'chunked',
-      },
-      body: JSON.stringify(data),
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  return await fetch(IS_DEVELOPMENT ? DEVELOPMENT_URL : PRODUCTION_URL, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+    },
+    body: JSON.stringify(data),
+  });
 };
 
 export const getData = async () => {
+  let data;
   try {
-    const data = await fetch(url, {
-      method: 'GET',
+    data = await fetch(DEVELOPMENT_URL, {
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        'Transfer-Encoding': 'chunked',
+        "Content-Type": "application/json",
+        "Transfer-Encoding": "chunked",
       },
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-        return response;
-      });
-    return data;
+    }).then((res) => {
+      return res.json();
+    });
   } catch (error) {
-    console.log(error);
+    console.log("Error intentando recuperar jsonBlob. ", error);
+  } finally {
+    return data;
   }
 };
 
 export const shareListado = async (listToShare) => {
-  try {
-    // Add list to the existent data
-    let prevData = await getData();
-    console.log('prev data: ', prevData);
-    const index = prevData.findIndex((ls) => ls.id === listToShare.id);
-
+  // Add list to the existent data
+  let data;
+  await getData().then((res) => {
+    if (res === undefined) return;
+    data = res;
+    console.log(data);
+    const index = data.findIndex((ls) => ls.id === listToShare.id);
     if (index !== -1) {
-      prevData = prevData.toSpliced(index, 1, listToShare);
-      console.log('la lista ya existe');
+      data = data.toSpliced(index, 1, listToShare);
+      console.log("la lista ya existe");
     } else {
-      prevData = [...prevData, listToShare];
-      console.log('la lista no existe');
+      data = [...data, listToShare];
+      console.log("la lista no existe");
     }
-    console.log('nueva data en blob: ', prevData);
+  });
 
-    // subir nueva data
-    setData(prevData).then((res) => {
-      console.log('lista compartida!');
-    });
+  // subir nueva data
+  const response = await setData(data);
+  if (response.ok) {
+    console.log("Ok");
+    return true;
+  } else {
+    return;
+  }
+};
+
+export const deleteData = async (ids = []) => {
+  try {
+    let prevData = await getData();
+    prevData = prevData.filter((item) => !ids.includes(item.id));
+
+    //subir datos actualizados
+    setData(prevData).then(console.log("JsonBlob actualizado!"));
   } catch (error) {
-    console.log('Error compartiendo lista: ', error);
+    console.log("Hubo un error intentando borrar datos de JsonBlob: ", error);
   }
 };

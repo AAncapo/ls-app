@@ -1,15 +1,15 @@
-import genId from '../libs/random-generator';
-import getDrawIdFromDate, { getDatetimeObject } from '../libs/datetime-parser';
-// import Jugada from "./Jugada"
+import genId from "../libs/random-generator";
+import getDrawIdFromDate, { getDatetime } from "../libs/datetime-parser";
 
 class Listado {
-  id = '';
-  draw_id = '';
-  autor = 'Sin autor';
-  title = 'Sin titulo';
-  creado = {};
+  id = "";
+  drawId = "";
+  autor = "Sin autor";
+  title = "Sin titulo";
+  creado = "";
+  lastModified = "";
   jugadas = [];
-  resultados = [];
+  resultados = {};
 
   premioFijoCorrido = 0.0;
   premioParle = 0.0;
@@ -22,13 +22,14 @@ class Listado {
     Total: { bruto: 0.0, limpio: 0.0, premios: 0.0 },
   };
 
-  constructor(autor = '', title = '', draw_id = '') {
+  constructor(autor = "", title = "", drawId = "") {
     this.id = genId();
-    this.draw_id = draw_id !== '' ? draw_id : getDrawIdFromDate();
-    this.creado = getDatetimeObject();
+    this.drawId = drawId !== "" ? drawId : getDrawIdFromDate();
+    this.creado = getDatetime();
+    this.lastModified = this.creado;
 
     this.autor = autor;
-    this.title = title !== '' ? title : `${this.autor}`;
+    this.title = title !== "" ? title : `${this.autor}`;
   }
 }
 

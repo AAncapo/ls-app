@@ -1,33 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
-
-const toCurrency = (val) => {
-  // eslint-disable-next-line no-undef
-  return Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(val);
-};
+import React, { useState } from "react";
+import NumbersInput from "./NumbersInput";
+import { USER_NAME } from "../constants";
+import { toCurrency } from "../libs/utils";
 
 const JugadaButton = ({ jugada, update, deleteJugada }) => {
   const [toggleDel, setToggleDel] = useState(false);
-  const [_nums, setNums] = useState(jugada.numeros);
-  const [dineroFijo, setDineroFijo] = useState(jugada.dinero_fijo);
-  const [dineroCorrido, setDineroCorrido] = useState(jugada.dinero_corrido);
-  const [dineroParlcent, setDineroParlcent] = useState(jugada.dinero_parlcent);
-  const [jugador, setJugador] = useState(jugada.jugador);
-
-  useEffect(() => {
-    jugada.dinero_fijo = dineroFijo;
-    jugada.dinero_corrido = dineroCorrido;
-    jugada.dinero_parlcent = dineroParlcent;
-    jugada.numeros = [..._nums];
-    jugada.jugador = jugador;
-    update(jugada);
-  }, [_nums, dineroFijo, dineroCorrido, dineroParlcent, jugador]);
-
   const type = jugada.type;
+
+  const onNumbersUpdated = (updatedNums) => {
+    jugada.numeros = updatedNums.filter((n) => !isNaN(parseInt(n)));
+    update(jugada);
+  };
 
   return (
     <TouchableOpacity
@@ -49,93 +34,102 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
         }}>
         {/* Numeros */}
         <View style={styles.numbers}>
-          <TextInput
-            keyboardType="numeric"
-            onEndEditing={(e) => {
-              const numsInput = e.nativeEvent.text.split(/[\s,._\\-\\;]/);
-              let nums = [];
-              numsInput.forEach((n) => {
-                if (!isNaN(parseInt(n))) nums.push(parseInt(n));
-              });
-              setNums([...nums]);
-            }}>
-            {_nums.join(" ")}
-          </TextInput>
+          <NumbersInput
+            numeros={jugada.numeros}
+            update={onNumbersUpdated}
+            styles={styles.textInput}
+          />
         </View>
 
         <View style={{ flexDirection: "row", flexGrow: 1 }}>
           {/* Parle&Centenas */}
-          <View
-            style={{
-              opacity: type !== "BOLA" ? 100 : 0,
-              pointerEvents: type !== "BOLA" ? "auto" : "none",
-              width: type !== "BOLA" ? 30 : 0,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 2,
-            }}>
-            <Text>$</Text>
-            <TextInput
-              placeholder="0.00"
-              keyboardType="numeric"
-              onEndEditing={(e) => {
-                const userInput = parseFloat(e.nativeEvent.text);
-                if (!isNaN(userInput)) setDineroParlcent(userInput);
+          {type !== "BOLA" && (
+            <View
+              style={{
+                width: 30,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 2,
               }}>
-              {dineroParlcent > 0 ? dineroParlcent : ""}
-            </TextInput>
-          </View>
-          {/* Fijos&Coridos */}
-          <View
-            style={{
-              opacity: type === "BOLA" ? 100 : 0,
-              pointerEvents: type === "BOLA" ? "auto" : "none",
-              width: type === "BOLA" ? 30 : 0,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-            }}>
-            <View style={styles.currency}>
               <Text>$</Text>
               <TextInput
+                style={styles.textInput}
                 placeholder="0.00"
                 keyboardType="numeric"
-                onEndEditing={(e) => {
-                  const userInput = parseFloat(e.nativeEvent.text);
-                  if (!isNaN(userInput)) setDineroFijo(userInput);
+                onChangeText={(text) => {
+                  const userInput = parseFloat(text);
+                  if (!isNaN(userInput)) {
+                    jugada.dinero_parlcent = Math.round(userInput);
+                    update(jugada);
+                  }
                 }}>
-                {dineroFijo > 0 ? dineroFijo : ""}
+                {jugada.dinero_parlcent > 0 ? jugada.dinero_parlcent : ""}
               </TextInput>
             </View>
-            <View style={styles.currency}>
-              <Text>$</Text>
-              <TextInput
-                placeholder="0.00"
-                keyboardType="numeric"
-                onEndEditing={(e) => {
-                  const userInput = parseFloat(e.nativeEvent.text);
-                  if (!isNaN(userInput)) setDineroCorrido(userInput);
-                }}>
-                {dineroCorrido > 0 ? dineroCorrido : ""}
-              </TextInput>
+          )}
+          {/* Fijos&Corridos */}
+          {type === "BOLA" && (
+            <View
+              style={{
+                width: 30,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+              }}>
+              <View style={styles.currency}>
+                <Text>$</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="0.00"
+                  keyboardType="numeric"
+                  onChangeText={(text) => {
+                    const userInput = parseFloat(text);
+                    if (!isNaN(userInput)) {
+                      jugada.dinero_fijo = Math.round(userInput);
+                      update(jugada);
+                    }
+                  }}>
+                  {jugada.dinero_fijo > 0 ? jugada.dinero_fijo : ""}
+                </TextInput>
+              </View>
+              <View style={styles.currency}>
+                <Text>$</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="0.00"
+                  keyboardType="numeric"
+                  onChangeText={(text) => {
+                    const userInput = parseFloat(text);
+                    if (!isNaN(userInput)) {
+                      jugada.dinero_corrido = Math.round(userInput);
+                      update(jugada);
+                    }
+                  }}>
+                  {jugada.dinero_corrido > 0 ? jugada.dinero_corrido : ""}
+                </TextInput>
+              </View>
             </View>
-          </View>
+          )}
         </View>
         {/* Premio */}
-        <View>
+        <View style={styles.premio}>
           <Text>Premio</Text>
           <Text>{jugada.premio > 0 ? `${toCurrency(jugada.premio)}` : "--"}</Text>
         </View>
         {/* Jugador */}
         <TextInput
+          style={styles.textInput}
           placeholder="jugador"
-          onEndEditing={(e) => {
-            const userInput = e.nativeEvent.text;
-            setJugador(userInput);
+          onChangeText={(text) => {
+            const userInput = text;
+            jugada.jugador = userInput;
+            update(jugada);
           }}>
-          {jugador}
+          {jugada.jugador}
         </TextInput>
+        <Text style={{ fontSize: 12 }}>{jugada.creado.split(" ")[1]}</Text>
       </View>
+      {/* Borrar */}
       <TouchableOpacity
         onPress={() => {
           setToggleDel(false);
@@ -163,6 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flexGrow: 1,
     justifyContent: "center",
+    alignItems: "center",
     marginBottom: 2,
   },
   container: {
@@ -174,13 +169,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
   },
+  textInput: {
+    textAlign: "center",
+    borderColor: "lightgray",
+    borderBottomWidth: 2,
+  },
+  premio: {
+    opacity: USER_NAME === "admin" ? 100 : 0,
+    alignItems: "center",
+  },
   currency: {
     flexDirection: "row",
     alignItems: "center",
     gap: 2,
   },
   numbers: {
-    flexGrow: 1,
+    paddingVertical: 5,
+    width: 50,
   },
   delete_text: {
     fontSize: 20,

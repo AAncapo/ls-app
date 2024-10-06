@@ -8,9 +8,9 @@
 
 export const getDatetimeObject = () => {
   // const datetime = new Date().toJSON().split('T')
-  const datetime = getDateWithTimezoneOffset().split(', ');
-  const _date = datetime[0].split('/');
-  const _time = datetime[1].split(':');
+  const datetime = getDateWithTimezoneOffset().split(", ");
+  const _date = datetime[0].split("/");
+  const _time = datetime[1].split(":");
   return {
     day: _date[1],
     month: _date[0],
@@ -18,30 +18,35 @@ export const getDatetimeObject = () => {
     hours: _time[0],
     minutes: _time[1],
     seconds: _time[2],
-    fullTime: _time.join(':'),
+    fullTime: _time.join(":"),
     fullDate: `${_date[2]}-${_date[0]}-${_date[1]}`,
+    fullDatetime: `${_date[2]}-${_date[0]}-${_date[1]} ${_time.join(":")}`,
   };
+};
+
+// returns dd/mm/yyyy hh:mm:ss
+export const getDatetime = () => {
+  const datetime = getDateWithTimezoneOffset().split(", ");
+  const date = datetime[0].split("/");
+  const time = datetime[1];
+  return `${date[1]}/${date[0]}/${date[2]} ${time}`;
 };
 
 const getDrawIdFromDate = () => {
   // d/n-YYYYMMDD
-  const _date = getDatetimeObject().fullDate.split('-').join('');
+  const _date = getDatetimeObject().fullDate.split("-").join("");
   const type = getDrawType();
 
   return `${type}-${_date}`;
 };
 
-export const getDrawType = () => {
-  const _time = parseInt(getDatetimeObject().fullTime.split(':').join(''));
-
+const getDrawType = () => {
+  const _time = parseInt(getDatetimeObject().fullTime.split(":").join(""));
   const day = inRange(_time, 80000, 132000);
   const night = inRange(_time, 143000, 213000);
-  let type = ''; // !!!! SOLO PARA DEBUGGING DRAWS -DEVOLVER A '' EN PRODUCCION !!!!
-  if (day) {
-    type = 'd';
-  } else if (night) {
-    type = 'n';
-  }
+  let type = "";
+  if (day) type = "d";
+  if (night) type = "n";
   return type;
 };
 
@@ -52,16 +57,16 @@ function inRange(x, min, max) {
 function getDateWithTimezoneOffset() {
   let date = new Date();
   let options = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: false,
-    timeZone: 'Cuba',
+    timeZone: "Cuba",
   };
-  return date.toLocaleString('en-US', options);
+  return date.toLocaleString("en-US", options);
 }
 
 export default getDrawIdFromDate;
