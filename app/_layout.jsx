@@ -1,6 +1,6 @@
-import React from 'react';
-import { Stack } from 'expo-router';
-import { DatabaseProvider } from './context/DatabaseContext';
+import React from "react";
+import { Stack } from "expo-router";
+import { DatabaseProvider } from "./context/DatabaseContext";
 
 const RootLayout = () => {
   return (

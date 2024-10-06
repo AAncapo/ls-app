@@ -22,6 +22,7 @@ import ListEditorHeader from "./components/ListEditorHeader";
 import Filters from "./components/Filters";
 import JugadaButton from "./components/JugadaButton";
 import { getDatetime } from "./libs/datetime-parser";
+import { StatusBar } from "expo-status-bar";
 
 const ListadoItem = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
@@ -127,6 +128,7 @@ const ListadoItem = () => {
 
   return (
     <View style={{ flexGrow: 1, marginTop: Constants.statusBarHeight }}>
+      {/* <StatusBar barStyle='dark-content'/> */}
       <ListEditorHeader {...saldo} />
       <Filters filter={filter} setFilter={setFilter} />
       <View style={{ flexGrow: 1 }}>

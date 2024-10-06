@@ -2,9 +2,10 @@ import { IS_DEVELOPMENT } from "../constants";
 
 const PRODUCTION_URL = "https://jsonblob.com/api/jsonBlob/1285329984779313152";
 const DEVELOPMENT_URL = "https://jsonblob.com/api/jsonBlob/1290330915019284480";
+const url = IS_DEVELOPMENT ? DEVELOPMENT_URL : PRODUCTION_URL;
 
 const setData = async (data) => {
-  return await fetch(IS_DEVELOPMENT ? DEVELOPMENT_URL : PRODUCTION_URL, {
+  return await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -17,7 +18,7 @@ const setData = async (data) => {
 export const getData = async () => {
   let data;
   try {
-    data = await fetch(DEVELOPMENT_URL, {
+    data = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
