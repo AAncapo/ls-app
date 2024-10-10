@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Alert, View } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { router } from "expo-router";
 
-import DATA from "./constants";
+import { DATA } from "./constants";
 import Listado from "./classes/Listado";
 import { DatabaseContext } from "./context/DatabaseContext";
 import getDrawIdFromDate from "./libs/datetime-parser";
@@ -11,7 +11,6 @@ import { setToStorage, getFromStorage, removeFromStorage } from "./libs/asyncsto
 
 const Selector = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
-  // const [list, setList] = useState(null)
 
   useEffect(() => {
     if (getDrawIdFromDate().split("-")[0] === "") {
@@ -56,21 +55,10 @@ const Selector = () => {
         flex: 1,
       }}>
       <Button
-        disabled={getDrawIdFromDate() !== "" ? false : true}
+        disabled={getDrawIdFromDate() !== "" || !database ? false : true}
         title={database !== null ? "editar listado" : "crear listado"}
         onPress={() => {
           handleButtonPress();
-          // if (getDrawType() !== '') {
-          //   if (list === null) {
-          //     const newListado = new Listado(DATA.USER_ID)
-          //     setList({...newListado})
-          //   } else {
-          //     router.push('/list_editor')
-          //   }
-          // } else {
-          //   // mostrar alert si esta fuera de horario
-          //   Alert.alert("No puede crear listas en este momento")
-          // }
         }}></Button>
     </View>
   );

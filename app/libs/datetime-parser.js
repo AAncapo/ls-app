@@ -36,7 +36,7 @@ const getDrawIdFromDate = () => {
   // d/n-YYYYMMDD
   const _date = getDatetimeObject().fullDate.split("-").join("");
   const type = getDrawType();
-
+  // return "d-20241008";
   return `${type}-${_date}`;
 };
 
