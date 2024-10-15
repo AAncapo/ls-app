@@ -6,6 +6,8 @@ const ListEditorHeader = (saldo) => {
   return (
     <View
       style={{
+        // flex: 1,
+        height: 80,
         flexDirection: "row",
         padding: 10,
         justifyContent: "space-around",

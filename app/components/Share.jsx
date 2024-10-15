@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import StyledButton from "./StyledButton";
 import CustomModal from "./CustomModal";
-import { shareListado } from "../libs/jsonblob-api";
+import { getUser, shareListado } from "../libs/jsonblob-api";
+import { Alert, View } from "react-native";
+import { DatabaseContext } from "../context/DatabaseContext";
 
 const Share = (list) => {
+  const { database } = useContext(DatabaseContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [loadingShare, setLoadingShare] = useState(false);
 
@@ -12,22 +15,25 @@ const Share = (list) => {
     if (loadingShare) return;
 
     setLoadingShare(true);
-    shareListado(list).then((res) => {
+    // Comprueba primero si el usuario sigue existiendo en el SERVER xd & si el pin es valido
+    getUser(database.user).then((res) => {
+      // Enviar lista si existe user en server
       if (res === undefined) {
-        //Mostrar error
-        // setShareError("No se pudo compartir la lista. Compruebe su conexion a internet.");
+        setLoadingShare(false);
+        Alert.alert("El usuario no existe");
+      } else {
+        shareListado(list).then((res) => console.log(res));
+        setLoadingShare(false);
       }
-      setLoadingShare(false);
     });
   };
-  const modalClose = () => {
-    setModalVisible(!modalVisible);
-  };
+
+  const modalClose = () => setModalVisible(false);
 
   const handleSharePress = () => setModalVisible(true);
 
   return (
-    <>
+    <View style={{ height: 100 }}>
       <CustomModal
         title={"Compartir este listado?"}
         visible={modalVisible}
@@ -35,7 +41,7 @@ const Share = (list) => {
         close={modalClose}
       />
       <StyledButton text={"ENVIAR LISTA"} handlePress={handleSharePress} />
-    </>
+    </View>
   );
 };
 

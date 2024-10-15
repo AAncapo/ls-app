@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Modal } from "react-native";
 import React from "react";
 
+// #2b2828 -> soft black
 const PopupModal = ({ visible, message, close }) => {
   return (
     <View style={styles.centeredView}>

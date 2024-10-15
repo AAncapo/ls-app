@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TextInput, View, Pressable, Button } from "react-native";
 import React, { useState } from "react";
 
 import { USER_NAME } from "../../constants";
@@ -15,20 +15,21 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       activeOpacity={0.6}
       underlayColor={"#DDDDDD"}
-      style={styles.parent}
+      style={[styles.parent, { backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white" }]}
       onPress={() => {
-        setToggleDel(false);
+        if (toggleDel) setToggleDel(false);
       }}
       onLongPress={() => {
-        setToggleDel(!toggleDel);
+        setToggleDel(true);
       }}>
       <View
         style={{
+          // flex: 1,
           width: "100%",
-          backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white",
+          height: "100%",
           paddingHorizontal: 10,
           alignItems: "center",
           flexDirection: "row",
@@ -54,10 +55,8 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                   keyboardType="numeric"
                   onChangeText={(text) => {
                     const userInput = parseFloat(text);
-                    if (!isNaN(userInput)) {
-                      jugada.dinero_parlcent = Math.round(userInput);
-                      update(jugada);
-                    }
+                    jugada.dinero_parlcent = !isNaN(userInput) ? userInput : 0;
+                    update(jugada);
                   }}>
                   {jugada.dinero_parlcent > 0 ? jugada.dinero_parlcent : ""}
                 </TextInput>
@@ -83,10 +82,8 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                     keyboardType="numeric"
                     onChangeText={(text) => {
                       const userInput = parseFloat(text);
-                      if (!isNaN(userInput)) {
-                        jugada.dinero_fijo = Math.round(userInput);
-                        update(jugada);
-                      }
+                      jugada.dinero_fijo = !isNaN(userInput) ? userInput : 0;
+                      update(jugada);
                     }}>
                     {jugada.dinero_fijo > 0 ? jugada.dinero_fijo : ""}
                   </TextInput>
@@ -102,10 +99,8 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
                     keyboardType="numeric"
                     onChangeText={(text) => {
                       const userInput = parseFloat(text);
-                      if (!isNaN(userInput)) {
-                        jugada.dinero_corrido = Math.round(userInput);
-                        update(jugada);
-                      }
+                      jugada.dinero_corrido = !isNaN(userInput) ? userInput : 0;
+                      update(jugada);
                     }}>
                     {jugada.dinero_corrido > 0 ? jugada.dinero_corrido : ""}
                   </TextInput>
@@ -138,24 +133,27 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
           position: "absolute",
           alignItems: "center",
           justifyContent: "center",
-          pointerEvents: "none",
+          opacity: toggleDel ? 100 : 0,
+          pointerEvents: toggleDel ? "auto" : "none",
         }}>
-        <TouchableOpacity
+        <Button
+          title="borrar"
           onPress={() => {
-            setToggleDel(false);
             deleteJugada(jugada.id);
+            console.log("borra");
+            setToggleDel(false);
           }}
-          style={[
-            {
-              opacity: toggleDel ? 100 : 0,
-              pointerEvents: toggleDel ? "auto" : "none",
-            },
-            styles.deleteButton,
-          ]}>
-          <Text style={styles.delete_text}>BORRAR</Text>
-        </TouchableOpacity>
+          // style={[
+          //   {
+          //     opacity: toggleDel ? 100 : 0,
+          //     pointerEvents: toggleDel ? "auto" : "none",
+          //   },
+          //   styles.deleteButton,
+          // ]}
+        ></Button>
+        {/* <Text style={styles.delete_text}>BORRAR</Text> */}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -163,18 +161,9 @@ const styles = StyleSheet.create({
   parent: {
     minHeight: 60,
     backgroundColor: "white",
-    flexGrow: 1,
+    flex: 1,
     justifyContent: "center",
     marginBottom: 2,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: "white",
-    paddingHorizontal: 10,
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    gap: 20,
   },
   premio: {
     opacity: USER_NAME === "admin" ? 100 : 0,

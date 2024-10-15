@@ -1,35 +1,59 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, TextInput, View, Alert, Button } from "react-native";
+import { StyleSheet, TextInput, View, Alert, Button, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
-import { DATA } from "./constants";
 import { getSession, updateSession } from "./libs/asyncstorage-handler";
+import { getUser } from "./libs/jsonblob-api";
+import { DatabaseContext } from "./context/DatabaseContext";
 
+// !!! El id se guarda en local y se carga de ahi pero al exportar listas siempre revisa el jsonBlob para comprobar que sigue siendo valido
 let inputPwd = "";
 
 export default function App() {
+  const { database, setDatabase } = useContext(DatabaseContext);
+
   const [init, setInit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!init) {
       getSession().then((res) => {
-        if (res === true) {
-          inputPwd = DATA.PASSWORD;
-          submit();
+        if (res === undefined) return;
+        console.log("sesion returned: ", res);
+        if (res.active === "true") {
+          console.log("user active");
+          setDatabase({ ...database, user: res.user });
           router.replace("./selector");
         }
       });
     } else {
+      // Ya hay una sesion iniciada
+      // (entra aunque el admin haya cambiado o eliminado el user)
       router.replace("./selector");
     }
   }, [init]);
 
-  const submit = () => {
-    if (inputPwd !== DATA.PASSWORD) Alert.alert("Pin incorrecto!");
-    else setInit(true);
+  const handleSubmit = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    // Fetch data from jsonBlob -> ver si el pin existe
+    const res = await getUser(inputPwd);
+    if (res !== undefined) {
+      // User found -> OK
+      setIsLoading(false);
+
+      updateSession(inputPwd, "true");
+      setInit(true);
+      setDatabase({ ...database, user: inputPwd });
+    } else {
+      setIsLoading(false);
+      Alert.alert("Pin incorrecto!");
+    }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.inputView}>
@@ -37,22 +61,16 @@ export default function App() {
           placeholder="Pin de usuario"
           secureTextEntry
           style={styles.inputText}
-          onChange={(e) => {
-            inputPwd = e.nativeEvent.text;
-            console.log(inputPwd);
+          onChangeText={(text) => {
+            inputPwd = text;
           }}
-          onSubmitEditing={() => {
-            submit();
-            updateSession("true");
-          }}
+          onSubmitEditing={handleSubmit}
           keyboardType="numeric"></TextInput>
       </View>
-      <Button
-        title="Entrar"
-        onPress={() => {
-          submit();
-          updateSession("true");
-        }}></Button>
+      <Button title="Entrar" onPress={handleSubmit}></Button>
+      {isLoading && (
+        <ActivityIndicator size={"large"} style={{ paddingVertical: 20 }}></ActivityIndicator>
+      )}
       <StatusBar style="auto" />
     </View>
   );

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
 import { getDatetime } from "../libs/datetime-parser";
+import { ParseFloat } from "../libs/utils";
 import Jugada from "../classes/Jugada";
 
 export default function useList(ls) {
@@ -34,8 +35,11 @@ export default function useList(ls) {
     if (index !== -1) {
       const updatedJugadas = list.jugadas.toSpliced(index, 1);
       const lCopy = list;
-      //Actualizar DB
       lCopy.jugadas = [...updatedJugadas];
+      // Update saldo
+      lCopy.saldo = { ...updateSaldo(lCopy) };
+      setSaldo({ ...lCopy.saldo });
+
       lCopy.lastModified = getDatetime();
       setList({ ...lCopy });
     }
@@ -63,12 +67,15 @@ const updateSaldo = (list) => {
   list.jugadas.forEach((jgd) => {
     const { dinero_fijo, dinero_corrido, dinero_parlcent } = jgd;
 
-    fijoCorridoBruto += dinero_fijo + dinero_corrido;
-    fijoCorridoLimpio = fijoCorridoBruto * 0.8;
+    if (jgd.type === "BOLA") {
+      fijoCorridoBruto += dinero_fijo + dinero_corrido;
+      fijoCorridoLimpio = fijoCorridoBruto * 0.8;
+    }
     if (jgd.type === "PARLE") {
       parlBruto += dinero_parlcent;
       parlLimpio = parlBruto * 0.7;
-    } else {
+    }
+    if (jgd.type === "CENT") {
       centBruto += dinero_parlcent;
       centLimpio = centBruto * 0.7;
     }
@@ -79,20 +86,20 @@ const updateSaldo = (list) => {
 
   return {
     FijosCorridos: {
-      bruto: Math.round(fijoCorridoBruto),
-      limpio: Math.round(fijoCorridoLimpio),
+      bruto: ParseFloat(fijoCorridoBruto),
+      limpio: ParseFloat(fijoCorridoLimpio),
     },
     Parles: {
-      bruto: Math.round(parlBruto),
-      limpio: Math.round(parlLimpio),
+      bruto: ParseFloat(parlBruto),
+      limpio: ParseFloat(parlLimpio),
     },
     Centenas: {
-      bruto: Math.round(centBruto),
-      limpio: Math.round(centLimpio),
+      bruto: ParseFloat(centBruto),
+      limpio: ParseFloat(centLimpio),
     },
     Total: {
-      bruto: Math.round(totalBruto),
-      limpio: Math.round(totalLimpio),
+      bruto: ParseFloat(totalBruto),
+      limpio: ParseFloat(totalLimpio),
     },
   };
 };

@@ -12,12 +12,12 @@ import { MARGIN_TOP } from "./constants";
 
 const ListadoItem = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
-  const list = database;
+  const list = database.lista;
 
   useEffect(() => {
-    if (database !== null && getDrawIdFromDate() !== database.drawId) {
-      console.log("db null");
-      setDatabase(null);
+    if (JSON.stringify(list) !== "{}" && getDrawIdFromDate() !== list.drawId) {
+      console.log("not authorized to edit -> back to selector");
+      setDatabase({ ...database, lista: { ...{} } });
       removeFromStorage("list");
       router.replace("./selector");
     }
@@ -32,12 +32,12 @@ const ListadoItem = () => {
       return;
     }
     // La db del listero por ahora es solo la lista
-    setDatabase({ ...ls });
+    setDatabase({ ...database, lista: { ...ls } });
   };
 
   return (
-    <View style={{ marginTop: MARGIN_TOP, flex: 1 }}>
-      <StatusBar style="light"></StatusBar>
+    <View style={{ flex: 1, marginTop: MARGIN_TOP, marginBottom: 0 }}>
+      <StatusBar barStyle="auto" backgroundColor={"#015953"}></StatusBar>
       <ListEditor lista={list} updated={updateDatabase} />
       <Share {...list} />
     </View>

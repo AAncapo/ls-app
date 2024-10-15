@@ -3,7 +3,6 @@ import { Button, Alert, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { router } from "expo-router";
 
-import { DATA } from "./constants";
 import Listado from "./classes/Listado";
 import { DatabaseContext } from "./context/DatabaseContext";
 import getDrawIdFromDate from "./libs/datetime-parser";
@@ -21,8 +20,9 @@ const Selector = () => {
     } else {
       // ver si ya hay una lista guardada
       getFromStorage("list").then((res) => {
+        console.log(res);
         if (res !== null) {
-          setDatabase({ ...res }); // asignar lista en storage a la db si existe
+          setDatabase({ ...database, lista: { ...res } }); // asignar lista en storage a la db si existe
           // trigger useEffect escuchando a la db y enruta al editor ;)
         } // no hacer nada si no existe lista en storage
       });
@@ -31,21 +31,21 @@ const Selector = () => {
 
   useEffect(() => {
     // save to storage
-    if (database !== null) {
-      setToStorage("list", database);
-      console.log("database updated and saved");
-    }
+    setToStorage("list", database.lista);
+    console.log("database updated and saved");
   }, [database]);
 
   const handleButtonPress = () => {
     // el boton permanece disabled mientras no puede editar
-    if (database !== null) {
+    if (hasListado()) {
       router.push("/list_editor");
     } else {
-      const listado = new Listado(DATA.USER_ID);
-      setDatabase({ ...listado }); // esto deberia actualizar el title del boton a 'editar listado'
+      const listado = new Listado(database.user);
+      setDatabase({ ...database, lista: { ...listado } }); // esto deberia actualizar el title del boton a 'editar listado'
     }
   };
+
+  const hasListado = () => JSON.stringify(database.lista) !== "{}";
 
   return (
     <View
@@ -55,8 +55,8 @@ const Selector = () => {
         flex: 1,
       }}>
       <Button
-        disabled={getDrawIdFromDate() !== "" || !database ? false : true}
-        title={database !== null ? "editar listado" : "crear listado"}
+        disabled={getDrawIdFromDate() !== "" || !hasListado() ? false : true}
+        title={hasListado() ? "editar listado" : "crear listado"}
         onPress={() => {
           handleButtonPress();
         }}></Button>

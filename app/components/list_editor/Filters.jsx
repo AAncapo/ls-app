@@ -7,48 +7,42 @@ const Filters = ({ filter, setFilter }) => {
       <TouchableOpacity
         onPress={() => {
           setFilter("BOLA");
-        }}
-      >
+        }}>
         <Text
           style={[
             {
               borderBottomWidth: filter === "BOLA" ? 6 : 0,
             },
             styles.filterText,
-          ]}
-        >
+          ]}>
           BOLA
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           setFilter("PARLE");
-        }}
-      >
+        }}>
         <Text
           style={[
             {
               borderBottomWidth: filter === "PARLE" ? 6 : 0,
             },
             styles.filterText,
-          ]}
-        >
+          ]}>
           PARLE
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           setFilter("CENT");
-        }}
-      >
+        }}>
         <Text
           style={[
             {
               borderBottomWidth: filter === "CENT" ? 6 : 0,
             },
             styles.filterText,
-          ]}
-        >
+          ]}>
           CENT
         </Text>
       </TouchableOpacity>

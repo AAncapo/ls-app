@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { View, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 
@@ -13,7 +14,6 @@ const ListEditor = ({ lista, updated }) => {
   const [jugadas, setJugadas] = useState(list.jugadas.filter((jgd) => jgd.type === filter));
 
   useEffect(() => {
-    //TODO: evitar q actualice al montar componente
     updated(list);
   }, [list]);
 
@@ -25,17 +25,27 @@ const ListEditor = ({ lista, updated }) => {
   const handleAddPress = () => addJugada(filter);
 
   return (
-    <View style={{ flexGrow: 1 }}>
+    <View
+      style={{
+        flex: 1,
+        // height: "100%"
+      }}>
       <ListEditorHeader {...saldo} />
       <Filters filter={filter} setFilter={setFilter} />
-      <View style={{ flexGrow: 1 }}>
-        <StyledButton text={"AÑADIR JUGADA"} handlePress={handleAddPress} />
+      <StyledButton text={"AÑADIR JUGADA"} handlePress={handleAddPress} />
+      <View
+        style={{
+          // height: "100%",
+          paddingBottom: 0,
+          flex: 1,
+        }}>
         <FlatList
           data={jugadas}
           renderItem={({ item }) => (
             <JugadaButton jugada={item} update={updateJugada} deleteJugada={deleteJugada} />
           )}
           keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 50 }}
         />
       </View>
     </View>
