@@ -1,10 +1,10 @@
-// DRAWS
-// var is_day_draw_time = Global.get_time_hhmmss() in range(134500,140000)
-// var is_night_draw_time = Global.get_time_hhmmss() in range(214500,230000)
+// Revisar draws de florida (d) 134500-140000  (n) 214500-230000
 
-//CREAR LISTAS
-// if int(time) >= 800 and int(time) < 1320: return "d"
-// elif int(time) >= 1430 and int(time) < 2130: return "n"
+// Crear listas (d) 60000-132800 (n) 140000-213500
+const DAYTIME_START = 60000;
+const DAYTIME_END = 132800;
+const NIGHT_START = 140000;
+const NIGHT_END = 213500;
 
 export const getDatetimeObject = () => {
   // const datetime = new Date().toJSON().split('T')
@@ -36,14 +36,14 @@ const getDrawIdFromDate = () => {
   // d/n-YYYYMMDD
   const _date = getDatetimeObject().fullDate.split("-").join("");
   const type = getDrawType();
-  // return "d-20241008";
   return `${type}-${_date}`;
 };
 
+// Esto solo se usa por los listados - los draws reciben su drawId por su cuenta
 const getDrawType = () => {
   const _time = parseInt(getDatetimeObject().fullTime.split(":").join(""));
-  const day = inRange(_time, 80000, 132000);
-  const night = inRange(_time, 143000, 213000);
+  const day = inRange(_time, DAYTIME_START, DAYTIME_END);
+  const night = inRange(_time, NIGHT_START, NIGHT_END);
   let type = "";
   if (day) type = "d";
   if (night) type = "n";
