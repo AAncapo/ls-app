@@ -2,7 +2,7 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TextInput, View, Alert, Button, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 
 import { getSession, updateSession } from "./libs/asyncstorage-handler";
 import { getUser } from "./libs/jsonblob-api";
@@ -13,27 +13,22 @@ let inputPwd = "";
 
 export default function App() {
   const { database, setDatabase } = useContext(DatabaseContext);
-
-  const [init, setInit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const started = useRef(false);
+  //FIXME: Se necesita una forma de volver a esta screen sin q me envie automaticamente al results despues de haber hecho login, el useRef no esta sirviendo
   useEffect(() => {
-    if (!init) {
-      getSession().then((res) => {
-        if (res === undefined) return;
-        console.log("sesion returned: ", res);
-        if (res.active === "true") {
-          console.log("user active");
-          setDatabase({ ...database, user: res.user });
-          router.replace("./selector");
-        }
-      });
-    } else {
-      // Ya hay una sesion iniciada
-      // (entra aunque el admin haya cambiado o eliminado el user)
-      router.replace("./selector");
-    }
-  }, [init]);
+    if (started) return;
+    getSession().then((res) => {
+      if (res === undefined) return;
+      console.log("sesion returned: ", res);
+      if (res.active === "true") {
+        // console.log("user active");
+        setDatabase({ ...database, user: res.user });
+        started.current = true;
+        router.replace("./selector");
+      }
+    });
+  }, []);
 
   const handleSubmit = async () => {
     if (isLoading) return;
@@ -46,8 +41,9 @@ export default function App() {
       setIsLoading(false);
 
       updateSession(inputPwd, "true");
-      setInit(true);
+      started.current = true;
       setDatabase({ ...database, user: inputPwd });
+      router.replace("./selector");
     } else {
       setIsLoading(false);
       Alert.alert("Pin incorrecto!");
@@ -64,8 +60,9 @@ export default function App() {
           onChangeText={(text) => {
             inputPwd = text;
           }}
-          onSubmitEditing={handleSubmit}
-          keyboardType="numeric"></TextInput>
+          onSubmitEditing={handleSubmit}>
+          {started && inputPwd}
+        </TextInput>
       </View>
       <Button title="Entrar" onPress={handleSubmit}></Button>
       {isLoading && (

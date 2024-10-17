@@ -1,11 +1,18 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import React from "react";
 
-const StyledButton = ({ text, handlePress, bgColor = "#CB3A60", textColor = "white" }) => {
+const StyledButton = ({
+  text,
+  handlePress,
+  bgColor = "#CB3A60",
+  textColor = "white",
+  enabled = true,
+}) => {
   return (
     <TouchableOpacity
       activeOpacity={0.6}
       underlayColor={"#DDDDDD"}
+      disabled={!enabled}
       style={[styles.container, { backgroundColor: bgColor }]}
       onPress={handlePress}>
       <Text style={[styles.buttonText, { color: textColor }]}>{text}</Text>

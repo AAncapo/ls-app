@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Alert, View } from "react-native";
 import React, { useContext, useEffect } from "react";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 
 import Listado from "./classes/Listado";
 import { DatabaseContext } from "./context/DatabaseContext";
@@ -60,6 +60,9 @@ const Selector = () => {
         onPress={() => {
           handleButtonPress();
         }}></Button>
+      <Link href={"/"} style={{ padding: 20 }}>
+        Cambiar pin
+      </Link>
     </View>
   );
 };

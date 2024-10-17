@@ -6,24 +6,24 @@ import { getUser, shareListado } from "../libs/jsonblob-api";
 import { Alert, View } from "react-native";
 import { DatabaseContext } from "../context/DatabaseContext";
 
-const Share = (list) => {
+const Share = ({ list, loading, setLoading }) => {
   const { database } = useContext(DatabaseContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [loadingShare, setLoadingShare] = useState(false);
+  // const [loadingShare, setLoadingShare] = useState(false);
 
   const modalConfirm = () => {
-    if (loadingShare) return;
+    if (loading) return;
 
-    setLoadingShare(true);
+    setLoading(true);
     // Comprueba primero si el usuario sigue existiendo en el SERVER xd & si el pin es valido
     getUser(database.user).then((res) => {
       // Enviar lista si existe user en server
       if (res === undefined) {
-        setLoadingShare(false);
+        setLoading(false);
         Alert.alert("El usuario no existe");
       } else {
         shareListado(list).then((res) => console.log(res));
-        setLoadingShare(false);
+        setLoading(false);
       }
     });
   };
@@ -40,7 +40,7 @@ const Share = (list) => {
         confirm={modalConfirm}
         close={modalClose}
       />
-      <StyledButton text={"ENVIAR LISTA"} handlePress={handleSharePress} />
+      <StyledButton text={"ENVIAR LISTA"} handlePress={handleSharePress} enabled={!loading} />
     </View>
   );
 };

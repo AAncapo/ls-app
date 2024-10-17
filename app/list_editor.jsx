@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect } from "react";
-import { View, Alert, StatusBar } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, Alert, StatusBar, ActivityIndicator, Text } from "react-native";
 import { router } from "expo-router";
 
 import ListEditor from "./components/list_editor/ListEditor";
@@ -13,6 +13,7 @@ import { MARGIN_TOP } from "./constants";
 const ListadoItem = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
   const list = database.lista;
+  const [loadingShare, setLoadingShare] = useState(false);
 
   useEffect(() => {
     if (JSON.stringify(list) !== "{}" && getDrawIdFromDate() !== list.drawId) {
@@ -39,7 +40,20 @@ const ListadoItem = () => {
     <View style={{ flex: 1, marginTop: MARGIN_TOP, marginBottom: 0 }}>
       <StatusBar barStyle="auto" backgroundColor={"#015953"}></StatusBar>
       <ListEditor lista={list} updated={updateDatabase} />
-      <Share {...list} />
+      {loadingShare && (
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 5,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 50,
+          }}>
+          <ActivityIndicator />
+          <Text>Enviando listado...</Text>
+        </View>
+      )}
+      <Share list={list} loading={loadingShare} setLoading={setLoadingShare} />
     </View>
   );
 };
