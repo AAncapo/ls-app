@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   premio: {
-    opacity: USER_NAME === "admin" ? 100 : 0,
+    opacity: 100,
     alignItems: "center",
     width: 80,
   },
