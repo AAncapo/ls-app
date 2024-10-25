@@ -3,12 +3,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Alert, StatusBar, ActivityIndicator, Text } from "react-native";
 // import { router } from "expo-router";
 
-import ListEditor from "./components/list_editor/ListEditor";
-import Share from "./components/Share";
-import { DatabaseContext } from "./context/DatabaseContext";
-import getDrawIdFromDate from "./libs/datetime-parser";
-import { removeFromStorage } from "./libs/asyncstorage-handler";
-import { MARGIN_TOP } from "./constants";
+import ListEditor from "../components/list_editor/ListEditor";
+import Share from "../components/Share";
+import { DatabaseContext } from "../context/DatabaseContext";
+import getDrawIdFromDate from "../libs/datetime-parser";
+import { removeFromStorage } from "../libs/asyncstorage-handler";
+import { MARGIN_TOP } from "../constants";
 
 const ListadoItem = () => {
   const { database, setDatabase } = useContext(DatabaseContext);

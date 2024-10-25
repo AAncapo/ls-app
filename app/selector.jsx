@@ -3,10 +3,10 @@ import { Button, Alert, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { Link, router } from "expo-router";
 
-import Listado from "./classes/Listado";
-import { DatabaseContext } from "./context/DatabaseContext";
-import getDrawIdFromDate from "./libs/datetime-parser";
-import { setToStorage, getFromStorage, removeFromStorage } from "./libs/asyncstorage-handler";
+import Listado from "../classes/Listado";
+import { DatabaseContext } from "../context/DatabaseContext";
+import getDrawIdFromDate from "../libs/datetime-parser";
+import { setToStorage, getFromStorage, removeFromStorage } from "../libs/asyncstorage-handler";
 
 const Selector = () => {
   const { database, setDatabase } = useContext(DatabaseContext);

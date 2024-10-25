@@ -4,9 +4,9 @@ import { StyleSheet, TextInput, View, Alert, Button, ActivityIndicator } from "r
 import { router } from "expo-router";
 import { useState, useEffect, useContext, useRef } from "react";
 
-import { getSession, updateSession } from "./libs/asyncstorage-handler";
-import { getUser } from "./libs/jsonblob-api";
-import { DatabaseContext } from "./context/DatabaseContext";
+import { getSession, updateSession } from "../libs/asyncstorage-handler";
+import { getUser } from "../libs/jsonblob-api";
+import { DatabaseContext } from "../context/DatabaseContext";
 
 // !!! El id se guarda en local y se carga de ahi pero al exportar listas siempre revisa el jsonBlob para comprobar que sigue siendo valido
 let inputPwd = "";
