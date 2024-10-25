@@ -10,7 +10,7 @@ class Listado {
   lastModified = "";
   jugadas = [];
   resultados = {};
-
+  isReadonly = false;
   premioFijoCorrido = 0.0;
   premioParle = 0.0;
   premioCentena = 0.0;

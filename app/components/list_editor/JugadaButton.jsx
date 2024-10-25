@@ -1,11 +1,10 @@
 import { StyleSheet, Text, TextInput, View, Pressable, Button } from "react-native";
 import React, { useState } from "react";
 
-import { USER_NAME } from "../../constants";
 import NumbersInput from "./NumbersInput";
 import { toCurrency } from "../../libs/utils";
 
-const JugadaButton = ({ jugada, update, deleteJugada }) => {
+const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
   const [toggleDel, setToggleDel] = useState(false);
   const type = jugada.type;
 
@@ -27,13 +26,13 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
       }}>
       <View
         style={{
-          // flex: 1,
           width: "100%",
           height: "100%",
           paddingHorizontal: 10,
           alignItems: "center",
           flexDirection: "row",
           gap: 20,
+          pointerEvents: isReadonly ? "none" : "auto",
         }}>
         {/* Numeros */}
         <View style={styles.numbers}>
@@ -137,21 +136,13 @@ const JugadaButton = ({ jugada, update, deleteJugada }) => {
           pointerEvents: toggleDel ? "auto" : "none",
         }}>
         <Button
+          disabled={isReadonly}
           title="borrar"
           onPress={() => {
             deleteJugada(jugada.id);
             console.log("borra");
             setToggleDel(false);
-          }}
-          // style={[
-          //   {
-          //     opacity: toggleDel ? 100 : 0,
-          //     pointerEvents: toggleDel ? "auto" : "none",
-          //   },
-          //   styles.deleteButton,
-          // ]}
-        ></Button>
-        {/* <Text style={styles.delete_text}>BORRAR</Text> */}
+          }}></Button>
       </View>
     </Pressable>
   );

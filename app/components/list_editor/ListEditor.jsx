@@ -7,6 +7,7 @@ import ListEditorHeader from "./ListEditorHeader";
 import Filters from "./Filters";
 import JugadaButton from "./JugadaButton";
 import StyledButton from "../StyledButton";
+import getDrawIdFromDate from "../../libs/datetime-parser";
 
 const ListEditor = ({ lista, updated }) => {
   const { list, saldo, addJugada, updateJugada, deleteJugada } = useList(lista);
@@ -25,24 +26,24 @@ const ListEditor = ({ lista, updated }) => {
   const handleAddPress = () => addJugada(filter);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        // height: "100%"
-      }}>
+    <View style={{ flex: 1 }}>
       <ListEditorHeader {...saldo} />
       <Filters filter={filter} setFilter={setFilter} />
-      <StyledButton text={"AÑADIR JUGADA"} handlePress={handleAddPress} />
-      <View
-        style={{
-          // height: "100%",
-          paddingBottom: 0,
-          flex: 1,
-        }}>
+      <StyledButton
+        text={"AÑADIR JUGADA"}
+        handlePress={handleAddPress}
+        enabled={getDrawIdFromDate() === list.drawId}
+      />
+      <View style={{ paddingBottom: 0, flex: 1 }}>
         <FlatList
           data={jugadas}
           renderItem={({ item }) => (
-            <JugadaButton jugada={item} update={updateJugada} deleteJugada={deleteJugada} />
+            <JugadaButton
+              jugada={item}
+              update={updateJugada}
+              deleteJugada={deleteJugada}
+              isReadonly={getDrawIdFromDate() !== list.drawId}
+            />
           )}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 50 }}

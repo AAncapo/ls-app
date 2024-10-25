@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { View, Alert, StatusBar, ActivityIndicator, Text } from "react-native";
-import { router } from "expo-router";
+// import { router } from "expo-router";
 
 import ListEditor from "./components/list_editor/ListEditor";
 import Share from "./components/Share";
@@ -12,34 +12,40 @@ import { MARGIN_TOP } from "./constants";
 
 const ListadoItem = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
-  const list = database.lista;
+  const [lista, setLista] = useState(database.lista);
   const [loadingShare, setLoadingShare] = useState(false);
 
   useEffect(() => {
-    if (JSON.stringify(list) !== "{}" && getDrawIdFromDate() !== list.drawId) {
-      console.log("not authorized to edit -> back to selector");
-      setDatabase({ ...database, lista: { ...{} } });
-      removeFromStorage("list");
-      router.replace("./selector");
+    setLista(database.lista);
+  }, [database]);
+
+  //Verificar si debe eliminar lista existente y crear una nueva
+  useEffect(() => {
+    if (JSON.stringify(database.lista) !== "{}") {
+      const currentDrawId = getDrawIdFromDate();
+      if (currentDrawId.split("-")[0] !== "" && currentDrawId !== database.lista.drawId) {
+        //Si el drawId == '' esta fuera de cualquier horario, normalmente despues del horario de escritura del dia y antes de la tarde. A esa hora todavia no debe borrarse, solo cuando inicia el siguiente horario
+        // tambien significa que la lista (noche) va a seguir visible hasta que inicie el horario del dia siguiente
+        removeFromStorage("list").then(() => {
+          alert("Listado anterior eliminado");
+          setDatabase({ ...database, lista: { ...{} } });
+        });
+      }
     }
   }, []);
 
   const updateDatabase = (ls) => {
-    // checkear aqui si esta en horario
-    //TODO: add key sended a listado para en caso de no haber sido enviada aun mostrar un modal preguntando si desea enviarla al admin antes de borrar
-    if (getDrawIdFromDate().split("-")[0] === "") {
+    if (getDrawIdFromDate() !== ls.drawId) {
       Alert.alert("No se puede editar el listado");
-      router.replace("./selector");
       return;
     }
-    // La db del listero por ahora es solo la lista
     setDatabase({ ...database, lista: { ...ls } });
   };
 
   return (
     <View style={{ flex: 1, marginTop: MARGIN_TOP, marginBottom: 0 }}>
       <StatusBar barStyle="auto" backgroundColor={"#015953"}></StatusBar>
-      <ListEditor lista={list} updated={updateDatabase} />
+      <ListEditor lista={lista} updated={updateDatabase} />
       {loadingShare && (
         <View
           style={{
@@ -53,7 +59,7 @@ const ListadoItem = () => {
           <Text>Enviando listado...</Text>
         </View>
       )}
-      <Share list={list} loading={loadingShare} setLoading={setLoadingShare} />
+      <Share list={lista} loading={loadingShare} setLoading={setLoadingShare} />
     </View>
   );
 };

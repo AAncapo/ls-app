@@ -106,7 +106,8 @@ export const setToStorage = async (key, data) => {
 
 export const removeFromStorage = async (key) => {
   try {
-    await AsyncStorage.removeItem(key);
+    const res = await AsyncStorage.removeItem(key);
+    return res;
   } catch (error) {
     console.log("Error intentando borrar list del storage ", error);
   }
