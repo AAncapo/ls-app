@@ -7,7 +7,7 @@ export const DatabaseContext = createContext();
 export function DatabaseProvider({ children }) {
   const [database, setDatabase] = useState({
     user: "",
-    lista: {},
+    lista: null,
   });
   return (
     <DatabaseContext.Provider value={{ database, setDatabase }}>

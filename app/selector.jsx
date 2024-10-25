@@ -6,46 +6,53 @@ import { Link, router } from "expo-router";
 import Listado from "../classes/Listado";
 import { DatabaseContext } from "../context/DatabaseContext";
 import getDrawIdFromDate from "../libs/datetime-parser";
-import { setToStorage, getFromStorage, removeFromStorage } from "../libs/asyncstorage-handler";
+import {
+  setToStorage,
+  getFromStorage,
+  removeFromStorage,
+  updateSession,
+} from "../libs/asyncstorage-handler";
 
 const Selector = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
 
+  //Verificar si debe eliminar lista existente y crear una nueva
   useEffect(() => {
-    if (getDrawIdFromDate().split("-")[0] === "") {
-      // ver si puede editar/crear listas
-      Alert.alert("No puede crear listas en este momento");
-      removeFromStorage("list"); // borra current list en storage porsiacaso
-      //TODO: add key sended a listado para en caso de no haber sido enviada aun mostrar un modal preguntando si desea enviarla al admin antes de borrar
+    const currentDrawId = getDrawIdFromDate();
+    if (
+      database.lista !== null &&
+      currentDrawId.split("-")[0] !== "" &&
+      currentDrawId !== database.lista.drawId
+    ) {
+      //Si el drawId == '' esta fuera de cualquier horario, normalmente despues del horario de escritura del dia y antes de la tarde. A esa hora todavia no debe borrarse, solo cuando inicia el siguiente horario
+      // tambien significa que la lista (noche) va a seguir visible hasta que inicie el horario del dia siguiente
+      setDatabase({ ...database, lista: null });
+      alert("Listado anterior eliminado");
     } else {
-      // ver si ya hay una lista guardada
+      // Permitir crear listado si es null y esta en horario de escritura
       getFromStorage("list").then((res) => {
-        console.log(res);
         if (res !== null) {
-          setDatabase({ ...database, lista: { ...res } }); // asignar lista en storage a la db si existe
-          // trigger useEffect escuchando a la db y enruta al editor ;)
-        } // no hacer nada si no existe lista en storage
+          console.log("Cargado listado de local storage");
+          setDatabase({ ...database, lista: { ...res } });
+        }
       });
     }
   }, []);
 
   useEffect(() => {
-    // save to storage
-    setToStorage("list", database.lista);
-    console.log("database updated and saved");
+    // Guardar en local al cambiar / eliminar de local si fue borrada (useEffect anterior))
+    if (database.lista !== null) setToStorage("list", database.lista);
+    else removeFromStorage("list");
   }, [database]);
 
   const handleButtonPress = () => {
-    // el boton permanece disabled mientras no puede editar
-    if (hasListado()) {
-      router.push("/list_editor");
+    if (database.lista) {
+      router.push("/list-editor");
     } else {
       const listado = new Listado(database.user);
-      setDatabase({ ...database, lista: { ...listado } }); // esto deberia actualizar el title del boton a 'editar listado'
+      setDatabase({ ...database, lista: { ...listado } });
     }
   };
-
-  const hasListado = () => JSON.stringify(database.lista) !== "{}";
 
   return (
     <View
@@ -55,12 +62,16 @@ const Selector = () => {
         flex: 1,
       }}>
       <Button
-        disabled={getDrawIdFromDate() !== "" || !hasListado() ? false : true}
-        title={hasListado() ? "editar listado" : "crear listado"}
+        title={database.lista !== null ? "ver listado" : "crear listado"}
         onPress={() => {
           handleButtonPress();
         }}></Button>
-      <Link href={"/"} style={{ padding: 20 }}>
+      <Link
+        href={"/"}
+        onPress={() => {
+          updateSession(database.user, "false");
+        }}
+        style={{ padding: 20 }}>
         Cambiar pin
       </Link>
     </View>

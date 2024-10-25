@@ -5,6 +5,7 @@ import CustomModal from "./CustomModal";
 import { getUser, shareListado } from "../libs/jsonblob-api";
 import { Alert, View } from "react-native";
 import { DatabaseContext } from "../context/DatabaseContext";
+import getDrawIdFromDate from "../libs/datetime-parser";
 
 const Share = ({ list, loading, setLoading }) => {
   const { database } = useContext(DatabaseContext);
@@ -22,6 +23,7 @@ const Share = ({ list, loading, setLoading }) => {
         setLoading(false);
         Alert.alert("El usuario no existe");
       } else {
+        // (!?) Puede enviar listas fuera de horario de escritura
         shareListado(list).then((res) => console.log(res));
         setLoading(false);
       }

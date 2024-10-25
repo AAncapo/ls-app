@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//FIXME: papi como que DOS trycatch pa un ifelse u ignorant fuck XDDDDD
 export const getSession = async () => {
   try {
     const session = await AsyncStorage.getItem("session");
