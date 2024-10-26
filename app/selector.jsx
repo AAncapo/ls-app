@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Alert, View } from "react-native";
+import { Button, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { Link, router } from "expo-router";
 

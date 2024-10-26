@@ -5,12 +5,10 @@ import CustomModal from "./CustomModal";
 import { getUser, shareListado } from "../libs/jsonblob-api";
 import { Alert, View } from "react-native";
 import { DatabaseContext } from "../context/DatabaseContext";
-import getDrawIdFromDate from "../libs/datetime-parser";
 
 const Share = ({ list, loading, setLoading }) => {
   const { database } = useContext(DatabaseContext);
   const [modalVisible, setModalVisible] = useState(false);
-  // const [loadingShare, setLoadingShare] = useState(false);
 
   const modalConfirm = () => {
     if (loading) return;
@@ -21,10 +19,12 @@ const Share = ({ list, loading, setLoading }) => {
       // Enviar lista si existe user en server
       if (res === undefined) {
         setLoading(false);
-        Alert.alert("El usuario no existe");
+        Alert.alert("No se pudo compartir");
       } else {
         // (!?) Puede enviar listas fuera de horario de escritura
-        shareListado(list).then((res) => console.log(res));
+        shareListado(list).then((res) =>
+          Alert.alert(res ? "Lista compartida" : "No se compartio la lista"),
+        );
         setLoading(false);
       }
     });
@@ -35,7 +35,7 @@ const Share = ({ list, loading, setLoading }) => {
   const handleSharePress = () => setModalVisible(true);
 
   return (
-    <View style={{ height: 100 }}>
+    <View style={{ paddingBottom: 20 }}>
       <CustomModal
         title={"Compartir este listado?"}
         visible={modalVisible}

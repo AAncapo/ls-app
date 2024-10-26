@@ -1,4 +1,5 @@
 import { IS_DEVELOPMENT } from "../constants";
+import { parseDatetimeToInt } from "./datetime-parser";
 
 const PRODUCTION_URL = "https://jsonblob.com/api/jsonBlob/1285329984779313152";
 const DEVELOPMENT_URL = "https://jsonblob.com/api/jsonBlob/1290330915019284480";
@@ -40,12 +41,18 @@ export const shareListado = async (listToShare) => {
     let data;
     const res = await getData();
     if (res === undefined && Array.isArray(res)) return;
+
     const index = res.findIndex((ls) => ls.id === listToShare.id);
     if (index !== -1) {
-      console.log("la lista ya existe");
+      // Cancelar operacion si listToShare no ha sido modificada
+      // (!!!) ESTA EXCEPCION NO SE PUEDE HACER EN ADMIN. Cuando el admin actualiza la lista en el blob con premios y draw no se cambia el valor de lastModified
+      if (
+        parseDatetimeToInt(res[index].lastModified) >= parseDatetimeToInt(listToShare.lastModified)
+      )
+        return false;
+
       data = res.toSpliced(index, 1, listToShare);
     } else {
-      console.log("la lista no existia");
       data = [...res, listToShare];
     }
 
@@ -54,7 +61,7 @@ export const shareListado = async (listToShare) => {
       // console.log("data a subir-", data);
       const response = await setData(data);
       if (response.ok) {
-        console.log("data reuploaded");
+        console.log("lista subida");
         return true;
       } else {
         console.log("la data no pudo ser resubida, response: ", response);

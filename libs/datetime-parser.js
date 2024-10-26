@@ -54,6 +54,12 @@ function inRange(x, min, max) {
   return x >= min && x <= max;
 }
 
+export const parseDatetimeToInt = (datetimeString) => {
+  const date = datetimeString.split(" ")[0].split("/");
+  const time = datetimeString.split(" ")[1].split(":").join("");
+  return parseInt(`${date[2]}${date[1]}${date[0]}${time}`);
+};
+
 function getDateWithTimezoneOffset() {
   let date = new Date();
   let options = {

@@ -6,10 +6,11 @@ class Listado {
   drawId = "";
   autor = "Sin autor";
   title = "Sin titulo";
+  isShared = false;
   creado = "";
   lastModified = "";
   jugadas = [];
-  resultados = {};
+  draw = {};
   isReadonly = false;
   premioFijoCorrido = 0.0;
   premioParle = 0.0;
