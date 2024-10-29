@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   premio: {
-    opacity: 100,
     alignItems: "center",
     width: 80,
   },

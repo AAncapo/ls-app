@@ -30,6 +30,7 @@ export const getData = async (targetUrl = url) => {
     });
   } catch (error) {
     console.log("Error intentando recuperar jsonBlob. ", error);
+    alert("Error de conexion");
   } finally {
     return data;
   }
@@ -42,15 +43,17 @@ export const shareListado = async (listToShare) => {
     const res = await getData();
     if (res === undefined && Array.isArray(res)) return;
 
+    listToShare.isShared = true; //innecesario por ahora
     const index = res.findIndex((ls) => ls.id === listToShare.id);
     if (index !== -1) {
       // Cancelar operacion si listToShare no ha sido modificada
       // (!!!) ESTA EXCEPCION NO SE PUEDE HACER EN ADMIN. Cuando el admin actualiza la lista en el blob con premios y draw no se cambia el valor de lastModified
       if (
         parseDatetimeToInt(res[index].lastModified) >= parseDatetimeToInt(listToShare.lastModified)
-      )
+      ) {
+        console.log("No se compartio, sin modificaciones");
         return false;
-
+      }
       data = res.toSpliced(index, 1, listToShare);
     } else {
       data = [...res, listToShare];
@@ -61,7 +64,7 @@ export const shareListado = async (listToShare) => {
       // console.log("data a subir-", data);
       const response = await setData(data);
       if (response.ok) {
-        console.log("lista subida");
+        // console.log("lista subida, ", data);
         return true;
       } else {
         console.log("la data no pudo ser resubida, response: ", response);
