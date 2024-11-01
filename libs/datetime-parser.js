@@ -1,9 +1,9 @@
 // Revisar draws de florida (d) 134500-140000  (n) 214500-230000
 
-// Crear listas (d) 60000-132800 (n) 140000-213500
+// Crear listas (d) 60000-132800 (n) 140000-213500 --- horario anterior
 const DAYTIME_START = 60000;
 const DAYTIME_END = 132800;
-const NIGHT_START = 140000;
+const NIGHT_START = 150100;
 const NIGHT_END = 213500;
 
 export const getDatetimeObject = () => {
