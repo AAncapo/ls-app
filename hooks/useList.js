@@ -3,6 +3,7 @@ import { useState } from "react";
 import { getDatetime } from "../libs/datetime-parser";
 import { ParseFloat } from "../libs/utils";
 import Jugada from "../classes/Jugada";
+// import { InteractionManager } from "react-native";
 
 export default function useList(ls) {
   const [list, setList] = useState(ls);
@@ -16,6 +17,7 @@ export default function useList(ls) {
   };
 
   const updateJugada = (jugada) => {
+    // InteractionManager.runAfterInteractions(() => {
     const index = list.jugadas.findIndex((item) => item.id === jugada.id);
     if (index !== -1) {
       const updatedJugadas = list.jugadas.toSpliced(index, 1, jugada);
@@ -28,6 +30,7 @@ export default function useList(ls) {
       lCopy.lastModified = getDatetime();
       setList({ ...lCopy });
     }
+    // });
   };
 
   const deleteJugada = (jugadaId) => {

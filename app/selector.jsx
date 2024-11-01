@@ -27,6 +27,7 @@ const Selector = () => {
     ) {
       //Si el drawId == '' esta fuera de cualquier horario, normalmente despues del horario de escritura del dia y antes de la tarde. A esa hora todavia no debe borrarse, solo cuando inicia el siguiente horario
       // tambien significa que la lista (noche) va a seguir visible hasta que inicie el horario del dia siguiente
+      console.log("borrando");
       removeFromStorage("list");
       setDatabase({ ...database, lista: null });
       alert("Listado anterior eliminado");

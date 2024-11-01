@@ -12,16 +12,10 @@ import getDrawIdFromDate from "../../libs/datetime-parser";
 const ListEditor = ({ lista, updated }) => {
   const { list, saldo, addJugada, updateJugada, deleteJugada } = useList(lista);
   const [filter, setFilter] = useState("BOLA");
-  const [jugadas, setJugadas] = useState(list.jugadas.filter((jgd) => jgd.type === filter));
 
   useEffect(() => {
     updated(list);
   }, [list]);
-
-  //Actualizar y filtrar jugadas
-  useEffect(() => {
-    setJugadas(list.jugadas.filter((jgd) => jgd.type === filter));
-  }, [list, filter]);
 
   const handleAddPress = () => addJugada(filter);
 
@@ -36,13 +30,14 @@ const ListEditor = ({ lista, updated }) => {
       />
       <View style={{ paddingBottom: 0, flex: 1 }}>
         <FlatList
-          data={jugadas}
+          data={list.jugadas}
           renderItem={({ item }) => (
             <JugadaButton
               jugada={item}
               update={updateJugada}
               deleteJugada={deleteJugada}
               isReadonly={getDrawIdFromDate() !== list.drawId}
+              visible={item.type === filter}
             />
           )}
           keyExtractor={(item) => item.id}

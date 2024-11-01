@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import NumbersInput from "./NumbersInput";
 import { toCurrency } from "../../libs/utils";
 
-const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
+const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false, visible }) => {
   const [toggleDel, setToggleDel] = useState(false);
   const type = jugada.type;
 
@@ -13,7 +13,7 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
     update(jugada);
   };
 
-  return (
+  return visible ? (
     <Pressable
       activeOpacity={0.6}
       underlayColor={"#DDDDDD"}
@@ -25,27 +25,22 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
         setToggleDel(true);
       }}>
       <View
-        style={{
-          width: "100%",
-          height: "100%",
-          paddingHorizontal: 10,
-          alignItems: "center",
-          flexDirection: "row",
-          gap: 20,
-          pointerEvents: isReadonly ? "none" : "auto",
-        }}>
+        style={[
+          styles.container,
+          {
+            pointerEvents: isReadonly ? "none" : "auto",
+          },
+        ]}>
         {/* Numeros */}
         <View style={styles.numbers}>
           <NumbersInput numeros={jugada.numeros} update={onNumbersUpdated} />
         </View>
 
-        <View style={{ flexDirection: "row", flexGrow: 1 }}>
+        <View style={styles.dineroContainer}>
           {/* Parle&Centenas */}
           {type !== "BOLA" && (
-            <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 12, color: "gray" }}>
-                {type === "PARLE" ? "Parle" : "Centena"}
-              </Text>
+            <View style={styles.parlCentContainer}>
+              <Text style={styles.parlCentText}>{type === "PARLE" ? "Parle" : "Centena"}</Text>
               <View style={styles.currencyContainer}>
                 <Text style={styles.currency}>$</Text>
                 <TextInput
@@ -55,8 +50,10 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
                   onChangeText={(text) => {
                     const userInput = parseFloat(text);
                     jugada.dinero_parlcent = !isNaN(userInput) ? userInput : 0;
-                    update(jugada);
-                  }}>
+                    // update(jugada);
+                  }}
+                  onBlur={() => update(jugada)}
+                  blurOnSubmit={true}>
                   {jugada.dinero_parlcent > 0 ? jugada.dinero_parlcent : ""}
                 </TextInput>
               </View>
@@ -64,15 +61,9 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
           )}
           {/* Fijos&Corridos */}
           {type === "BOLA" && (
-            <View
-              style={{
-                width: 30,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-              }}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 12, color: "gray" }}>Fijo</Text>
+            <View style={styles.fijoCorrContainer}>
+              <View style={styles.fijoContainer}>
+                <Text style={styles.fijoText}>Fijo</Text>
                 <View style={styles.currencyContainer}>
                   <Text style={styles.currency}>$</Text>
                   <TextInput
@@ -82,14 +73,16 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
                     onChangeText={(text) => {
                       const userInput = parseFloat(text);
                       jugada.dinero_fijo = !isNaN(userInput) ? userInput : 0;
-                      update(jugada);
-                    }}>
+                      // update(jugada);
+                    }}
+                    onBlur={() => update(jugada)}
+                    blurOnSubmit={true}>
                     {jugada.dinero_fijo > 0 ? jugada.dinero_fijo : ""}
                   </TextInput>
                 </View>
               </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 12, color: "gray" }}>Corrido</Text>
+              <View style={styles.corrContainer}>
+                <Text style={styles.corrText}>Corrido</Text>
                 <View style={styles.currencyContainer}>
                   <Text style={styles.currency}>$</Text>
                   <TextInput
@@ -99,8 +92,10 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
                     onChangeText={(text) => {
                       const userInput = parseFloat(text);
                       jugada.dinero_corrido = !isNaN(userInput) ? userInput : 0;
-                      update(jugada);
-                    }}>
+                      // update(jugada);
+                    }}
+                    onBlur={() => update(jugada)}
+                    blurOnSubmit={true}>
                     {jugada.dinero_corrido > 0 ? jugada.dinero_corrido : ""}
                   </TextInput>
                 </View>
@@ -119,22 +114,22 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
           onChangeText={(text) => {
             const userInput = text;
             jugada.jugador = userInput;
-            update(jugada);
-          }}>
+            // update(jugada);
+          }}
+          onBlur={() => update(jugada)}
+          blurOnSubmit={true}>
           {jugada.jugador}
         </TextInput>
       </View>
       {/* Borrar */}
       <View
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: toggleDel ? 100 : 0,
-          pointerEvents: toggleDel ? "auto" : "none",
-        }}>
+        style={[
+          styles.deleteContainer,
+          {
+            opacity: toggleDel ? 100 : 0,
+            pointerEvents: toggleDel ? "auto" : "none",
+          },
+        ]}>
         <Button
           disabled={isReadonly}
           title="borrar"
@@ -145,7 +140,7 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false }) => {
           }}></Button>
       </View>
     </Pressable>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -156,6 +151,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 2,
   },
+  container: {
+    width: "100%",
+    height: "100%",
+    paddingHorizontal: 10,
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 20,
+  },
+  parlCentContainer: { alignItems: "center" },
+  fijoCorrContainer: {
+    width: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  fijoContainer: { alignItems: "center" },
+  corrContainer: { alignItems: "center" },
+  parlCentText: { fontSize: 12, color: "gray" },
+  corrText: { fontSize: 12, color: "gray" },
+  fijoText: { fontSize: 12, color: "gray" },
   premio: {
     alignItems: "center",
     width: 80,
@@ -173,6 +188,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     width: 50,
   },
+  dineroContainer: { flexDirection: "row", flexGrow: 1 },
   deleteButton: {
     backgroundColor: "red",
     alignItems: "center",
@@ -183,11 +199,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
   },
-  delete_text: {
-    fontSize: 20,
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
+  deleteContainer: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

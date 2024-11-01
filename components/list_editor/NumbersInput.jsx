@@ -1,4 +1,4 @@
-import { TextInput } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import React, { useState } from "react";
 
 const HEIGHT_STEP = 19;
@@ -9,28 +9,35 @@ const NumbersInput = ({ numeros, update }) => {
     numeros.length > 0 ? numeros.length * HEIGHT_STEP : MIN_HEIGHT,
   );
   const [val, setVal] = useState(numeros.join("\n")); // array to string
-
+  // const numbersInput = createRef();
   return (
     <TextInput
+      // ref={numbersInput}
       placeholder="---"
       keyboardType="numeric"
       multiline={true}
-      blurOnSubmit={false}
+      blurOnSubmit={true}
+      // autoFocus={true}
       onChangeText={(text) => {
         const separated = text.split(/[\s\n.,\-]/);
         setInputHeight(separated.length > 0 ? separated.length * HEIGHT_STEP : MIN_HEIGHT);
         const newVal = separated;
-        update(newVal);
         setVal(newVal.join("\n"));
       }}
-      style={{
-        minHeight: MIN_HEIGHT,
-        height: inputHeight,
-        fontWeight: "bold",
-      }}>
-      {val}
-    </TextInput>
+      onBlur={() => {
+        update(val.split("\n"));
+      }}
+      defaultValue={val}
+      style={[styles.input, { height: inputHeight }]}
+    />
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    minHeight: MIN_HEIGHT,
+    fontWeight: "bold",
+  },
+});
 
 export default NumbersInput;
