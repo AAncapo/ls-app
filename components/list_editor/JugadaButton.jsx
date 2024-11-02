@@ -13,11 +13,17 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false, visibl
     update(jugada);
   };
 
-  return visible ? (
+  return (
     <Pressable
       activeOpacity={0.6}
       underlayColor={"#DDDDDD"}
-      style={[styles.parent, { backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white" }]}
+      style={[
+        styles.parent,
+        {
+          display: visible ? "flex" : "none",
+          backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white",
+        },
+      ]}
       onPress={() => {
         if (toggleDel) setToggleDel(false);
       }}
@@ -140,7 +146,7 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false, visibl
           }}></Button>
       </View>
     </Pressable>
-  ) : null;
+  );
 };
 
 const styles = StyleSheet.create({

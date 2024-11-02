@@ -14,10 +14,10 @@ let inputPwd = "";
 export default function App() {
   const { database, setDatabase } = useContext(DatabaseContext);
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     getSession().then((res) => {
       if (res === undefined) return;
-      console.log("sesion returned: ", res);
       if (res.active === "true") {
         setDatabase({ ...database, user: res.user });
         router.replace("./selector");
@@ -49,7 +49,6 @@ export default function App() {
       <View style={styles.inputView}>
         <TextInput
           placeholder="Pin de usuario"
-          // secureTextEntry
           style={styles.inputText}
           onChangeText={(text) => {
             inputPwd = text;

@@ -19,7 +19,7 @@ const ListadoItem = () => {
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
-    if (database.lista !== null && JSON.stringify(database.lista) !== "{}") {
+    if (database.lista && JSON.stringify(database.lista) !== "{}") {
       setToStorage("list", database.lista);
       setLista({ ...database.lista });
     }

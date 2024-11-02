@@ -1,80 +1,78 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, View } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 
 import Listado from "../classes/Listado";
 import { DatabaseContext } from "../context/DatabaseContext";
 import getDrawIdFromDate from "../libs/datetime-parser";
-import {
-  setToStorage,
-  getFromStorage,
-  removeFromStorage,
-  updateSession,
-} from "../libs/asyncstorage-handler";
+import { getFromStorage, removeFromStorage, updateSession } from "../libs/asyncstorage-handler";
+import CustomModal from "../components/CustomModal";
 
 const Selector = () => {
   const { database, setDatabase } = useContext(DatabaseContext);
+  const [allowView, setAllowView] = useState();
+  const [allowCreate, setAllowCreate] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
 
-  //Verificar si debe eliminar lista existente y crear una nueva
   useEffect(() => {
-    // removeFromStorage("list");
-    const currentDrawId = getDrawIdFromDate();
-    if (
-      hasListado() &&
-      currentDrawId.split("-")[0] !== "" &&
-      currentDrawId !== database.lista?.drawId
-    ) {
-      //Si el drawId == '' esta fuera de cualquier horario, normalmente despues del horario de escritura del dia y antes de la tarde. A esa hora todavia no debe borrarse, solo cuando inicia el siguiente horario
-      // tambien significa que la lista (noche) va a seguir visible hasta que inicie el horario del dia siguiente
-      console.log("borrando");
-      removeFromStorage("list");
-      setDatabase({ ...database, lista: null });
-      alert("Listado anterior eliminado");
-    } else {
-      // Permitir crear listado si es null y esta en horario de escritura
-      getFromStorage("list").then((res) => {
-        if (res !== null || hasListado()) {
-          // console.log("Cargado listado de local storage: ", res);
-          setDatabase({ ...database, lista: { ...res } });
-        }
-      });
-    }
+    getFromStorage("list").then((res) => {
+      setDatabase({ ...database, lista: res !== null ? { ...res } : null });
+    });
   }, []);
 
-  const handleButtonPress = () => {
-    if (hasListado()) {
-      router.push("/list-editor");
-    } else {
-      const listado = new Listado(database.user);
-      setDatabase({ ...database, lista: { ...listado } });
-    }
+  useEffect(() => {
+    setAllowView(database.lista);
+    setAllowCreate(getDrawIdFromDate() !== database.lista?.drawId);
+  }, [database]);
+
+  const openEditor = () => router.push("/list-editor");
+
+  const createList = () => {
+    removeFromStorage("list");
+    const listado = new Listado(database.user);
+    setDatabase({ ...database, lista: { ...listado } });
   };
 
-  const hasListado = () => database.lista !== null && JSON.stringify(database.lista) !== "{}";
+  const modalConfirm = () => createList();
+
+  const modalClose = () => setModalVisible(false);
 
   return (
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-      }}>
-      <Button
-        title={hasListado() ? "ver listado" : "crear listado"}
-        onPress={() => {
-          handleButtonPress();
-        }}></Button>
-      <Link
-        href={"/"}
-        onPress={() => {
-          updateSession(database.user, "false");
-        }}
-        style={{ padding: 20 }}>
-        Cambiar pin
-      </Link>
-    </View>
+    <>
+      <CustomModal
+        title={"Eliminar listado actual y crear uno nuevo?"}
+        visible={modalVisible}
+        confirm={modalConfirm}
+        close={modalClose}
+      />
+      <View style={styles.container}>
+        <Button disabled={!allowView} title={"ver listado"} onPress={openEditor} />
+        <Button
+          disabled={!allowCreate}
+          title="crear listado"
+          onPress={() => setModalVisible(true)}
+        />
+        <Link
+          href={"/"}
+          onPress={() => {
+            updateSession(database.user, "false");
+          }}
+          style={{ padding: 20 }}>
+          Cambiar pin
+        </Link>
+      </View>
+    </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    gap: 20,
+  },
+});
 
 export default Selector;
