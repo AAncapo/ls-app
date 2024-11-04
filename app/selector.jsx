@@ -1,37 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, StyleSheet, View } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
 
 import Listado from "../classes/Listado";
-import { DatabaseContext } from "../context/DatabaseContext";
 import getDrawIdFromDate from "../libs/datetime-parser";
-import { getFromStorage, removeFromStorage, updateSession } from "../libs/asyncstorage-handler";
 import CustomModal from "../components/CustomModal";
+import useDatabase from "../hooks/useDatabase";
 
 const Selector = () => {
-  const { database, setDatabase } = useContext(DatabaseContext);
+  const { database, updateDatabase } = useDatabase();
   const [allowView, setAllowView] = useState();
   const [allowCreate, setAllowCreate] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    getFromStorage("list").then((res) => {
-      setDatabase({ ...database, lista: res !== null ? { ...res } : null });
-    });
-  }, []);
-
-  useEffect(() => {
-    setAllowView(database.lista);
+    setAllowView(database.lista !== null);
     setAllowCreate(getDrawIdFromDate() !== database.lista?.drawId);
   }, [database]);
 
   const openEditor = () => router.push("/list-editor");
 
   const createList = () => {
-    removeFromStorage("list");
-    const listado = new Listado(database.user);
-    setDatabase({ ...database, lista: { ...listado } });
+    const listado = new Listado(database.session.user);
+    updateDatabase("lista", { ...listado });
   };
 
   const modalConfirm = () => createList();
@@ -55,9 +47,7 @@ const Selector = () => {
         />
         <Link
           href={"/"}
-          onPress={() => {
-            updateSession(database.user, "false");
-          }}
+          onPress={() => updateDatabase("session", { ...database.session, active: false })}
           style={{ padding: 20 }}>
           Cambiar pin
         </Link>

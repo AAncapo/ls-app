@@ -1,75 +1,53 @@
 import { StyleSheet, Text, TextInput, View, Pressable, Button } from "react-native";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 
 import NumbersInput from "./NumbersInput";
 import { toCurrency } from "../../libs/utils";
 
-const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false, visible }) => {
-  const [toggleDel, setToggleDel] = useState(false);
-  const type = jugada.type;
+const JugadaButton = memo(
+  function JugadaButton({ jugada, update, deleteJugada, isReadonly, visible }) {
+    const [toggleDel, setToggleDel] = useState(false);
+    const type = jugada.type;
+    console.log("jugada");
+    const onNumbersUpdated = (updatedNums) => {
+      jugada.numeros = updatedNums.filter((n) => !isNaN(parseInt(n)));
+      update(jugada);
+    };
 
-  const onNumbersUpdated = (updatedNums) => {
-    jugada.numeros = updatedNums.filter((n) => !isNaN(parseInt(n)));
-    update(jugada);
-  };
-
-  return (
-    <Pressable
-      activeOpacity={0.6}
-      underlayColor={"#DDDDDD"}
-      style={[
-        styles.parent,
-        {
-          display: visible ? "flex" : "none",
-          backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white",
-        },
-      ]}
-      onPress={() => {
-        if (toggleDel) setToggleDel(false);
-      }}
-      onLongPress={() => {
-        setToggleDel(true);
-      }}>
-      <View
+    return (
+      <Pressable
+        activeOpacity={0.6}
+        underlayColor={"#DDDDDD"}
         style={[
-          styles.container,
+          styles.parent,
           {
-            pointerEvents: isReadonly ? "none" : "auto",
+            // display: filter === type ? "flex" : "none",
+            backgroundColor: jugada.premio > 0 ? "#FBE4CF" : "white",
           },
-        ]}>
-        {/* Numeros */}
-        <View style={styles.numbers}>
-          <NumbersInput numeros={jugada.numeros} update={onNumbersUpdated} />
-        </View>
+        ]}
+        onPress={() => {
+          if (toggleDel) setToggleDel(false);
+        }}
+        onLongPress={() => {
+          setToggleDel(true);
+        }}>
+        <View
+          style={[
+            styles.container,
+            {
+              pointerEvents: isReadonly ? "none" : "auto",
+            },
+          ]}>
+          {/* Numeros */}
+          <View style={styles.numbers}>
+            <NumbersInput numeros={jugada.numeros} update={onNumbersUpdated} />
+          </View>
 
-        <View style={styles.dineroContainer}>
-          {/* Parle&Centenas */}
-          {type !== "BOLA" && (
-            <View style={styles.parlCentContainer}>
-              <Text style={styles.parlCentText}>{type === "PARLE" ? "Parle" : "Centena"}</Text>
-              <View style={styles.currencyContainer}>
-                <Text style={styles.currency}>$</Text>
-                <TextInput
-                  style={styles.currency}
-                  placeholder="0.00"
-                  keyboardType="numeric"
-                  onChangeText={(text) => {
-                    const userInput = parseFloat(text);
-                    jugada.dinero_parlcent = !isNaN(userInput) ? userInput : 0;
-                    // update(jugada);
-                  }}
-                  onBlur={() => update(jugada)}
-                  blurOnSubmit={true}>
-                  {jugada.dinero_parlcent > 0 ? jugada.dinero_parlcent : ""}
-                </TextInput>
-              </View>
-            </View>
-          )}
-          {/* Fijos&Corridos */}
-          {type === "BOLA" && (
-            <View style={styles.fijoCorrContainer}>
-              <View style={styles.fijoContainer}>
-                <Text style={styles.fijoText}>Fijo</Text>
+          <View style={styles.dineroContainer}>
+            {/* Parle&Centenas */}
+            {type !== "BOLA" && (
+              <View style={styles.parlCentContainer}>
+                <Text style={styles.parlCentText}>{type === "PARLE" ? "Parle" : "Centena"}</Text>
                 <View style={styles.currencyContainer}>
                   <Text style={styles.currency}>$</Text>
                   <TextInput
@@ -78,76 +56,101 @@ const JugadaButton = ({ jugada, update, deleteJugada, isReadonly = false, visibl
                     keyboardType="numeric"
                     onChangeText={(text) => {
                       const userInput = parseFloat(text);
-                      jugada.dinero_fijo = !isNaN(userInput) ? userInput : 0;
+                      jugada.dinero_parlcent = !isNaN(userInput) ? userInput : 0;
                       // update(jugada);
                     }}
                     onBlur={() => update(jugada)}
                     blurOnSubmit={true}>
-                    {jugada.dinero_fijo > 0 ? jugada.dinero_fijo : ""}
+                    {jugada.dinero_parlcent > 0 ? jugada.dinero_parlcent : ""}
                   </TextInput>
                 </View>
               </View>
-              <View style={styles.corrContainer}>
-                <Text style={styles.corrText}>Corrido</Text>
-                <View style={styles.currencyContainer}>
-                  <Text style={styles.currency}>$</Text>
-                  <TextInput
-                    style={styles.currency}
-                    placeholder="0.00"
-                    keyboardType="numeric"
-                    onChangeText={(text) => {
-                      const userInput = parseFloat(text);
-                      jugada.dinero_corrido = !isNaN(userInput) ? userInput : 0;
-                      // update(jugada);
-                    }}
-                    onBlur={() => update(jugada)}
-                    blurOnSubmit={true}>
-                    {jugada.dinero_corrido > 0 ? jugada.dinero_corrido : ""}
-                  </TextInput>
+            )}
+            {/* Fijos&Corridos */}
+            {type === "BOLA" && (
+              <View style={styles.fijoCorrContainer}>
+                <View style={styles.fijoContainer}>
+                  <Text style={styles.fijoText}>Fijo</Text>
+                  <View style={styles.currencyContainer}>
+                    <Text style={styles.currency}>$</Text>
+                    <TextInput
+                      style={styles.currency}
+                      placeholder="0.00"
+                      keyboardType="numeric"
+                      onChangeText={(text) => {
+                        const userInput = parseFloat(text);
+                        jugada.dinero_fijo = !isNaN(userInput) ? userInput : 0;
+                        // update(jugada);
+                      }}
+                      onBlur={() => update(jugada)}
+                      blurOnSubmit={true}>
+                      {jugada.dinero_fijo > 0 ? jugada.dinero_fijo : ""}
+                    </TextInput>
+                  </View>
+                </View>
+                <View style={styles.corrContainer}>
+                  <Text style={styles.corrText}>Corrido</Text>
+                  <View style={styles.currencyContainer}>
+                    <Text style={styles.currency}>$</Text>
+                    <TextInput
+                      style={styles.currency}
+                      placeholder="0.00"
+                      keyboardType="numeric"
+                      onChangeText={(text) => {
+                        const userInput = parseFloat(text);
+                        jugada.dinero_corrido = !isNaN(userInput) ? userInput : 0;
+                        // update(jugada);
+                      }}
+                      onBlur={() => update(jugada)}
+                      blurOnSubmit={true}>
+                      {jugada.dinero_corrido > 0 ? jugada.dinero_corrido : ""}
+                    </TextInput>
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
+          {/* Premio */}
+          <View style={styles.premio}>
+            <Text>Premio</Text>
+            <Text>{jugada.premio > 0 ? `${toCurrency(jugada.premio)}` : "--"}</Text>
+          </View>
+          {/* Jugador */}
+          <TextInput
+            placeholder="Nombre"
+            onChangeText={(text) => {
+              const userInput = text;
+              jugada.jugador = userInput;
+              // update(jugada);
+            }}
+            onBlur={() => update(jugada)}
+            blurOnSubmit={true}>
+            {jugada.jugador}
+          </TextInput>
         </View>
-        {/* Premio */}
-        <View style={styles.premio}>
-          <Text>Premio</Text>
-          <Text>{jugada.premio > 0 ? `${toCurrency(jugada.premio)}` : "--"}</Text>
+        {/* Borrar */}
+        <View
+          style={[
+            styles.deleteContainer,
+            {
+              opacity: toggleDel ? 100 : 0,
+              pointerEvents: toggleDel ? "auto" : "none",
+            },
+          ]}>
+          <Button
+            disabled={isReadonly}
+            title="borrar"
+            onPress={() => {
+              deleteJugada(jugada.id);
+              console.log("borra");
+              setToggleDel(false);
+            }}></Button>
         </View>
-        {/* Jugador */}
-        <TextInput
-          placeholder="Nombre"
-          onChangeText={(text) => {
-            const userInput = text;
-            jugada.jugador = userInput;
-            // update(jugada);
-          }}
-          onBlur={() => update(jugada)}
-          blurOnSubmit={true}>
-          {jugada.jugador}
-        </TextInput>
-      </View>
-      {/* Borrar */}
-      <View
-        style={[
-          styles.deleteContainer,
-          {
-            opacity: toggleDel ? 100 : 0,
-            pointerEvents: toggleDel ? "auto" : "none",
-          },
-        ]}>
-        <Button
-          disabled={isReadonly}
-          title="borrar"
-          onPress={() => {
-            deleteJugada(jugada.id);
-            console.log("borra");
-            setToggleDel(false);
-          }}></Button>
-      </View>
-    </Pressable>
-  );
-};
+      </Pressable>
+    );
+  },
+  (prev, next) => prev.visible === next.visible,
+);
 
 const styles = StyleSheet.create({
   parent: {

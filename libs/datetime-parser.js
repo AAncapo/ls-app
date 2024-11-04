@@ -7,7 +7,6 @@ const NIGHT_START = 150100;
 const NIGHT_END = 213500;
 
 export const getDatetimeObject = () => {
-  // const datetime = new Date().toJSON().split('T')
   const datetime = getDateWithTimezoneOffset().split(", ");
   const _date = datetime[0].split("/");
   const _time = datetime[1].split(":");

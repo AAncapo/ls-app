@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { View, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 
 import useList from "../../hooks/useList";
 import ListEditorHeader from "./ListEditorHeader";
@@ -8,40 +8,52 @@ import Filters from "./Filters";
 import JugadaButton from "./JugadaButton";
 import StyledButton from "../StyledButton";
 import getDrawIdFromDate from "../../libs/datetime-parser";
+// import Test from "../test";
 
-const ListEditor = ({ lista, updated }) => {
-  const { list, saldo, addJugada, updateJugada, deleteJugada } = useList(lista);
+const ListEditor = () => {
+  const { list, addJugada, updateJugada, deleteJugada } = useList();
   const [filter, setFilter] = useState("BOLA");
+  const [jugadas, setJugadas] = useState(list.jugadas.filter((j) => j.type === filter));
 
-  useEffect(() => {
-    updated(list);
-  }, [list]);
+  const handleAddPress = useCallback(() => {
+    addJugada(filter);
+    setJugadas([...list.jugadas.filter((j) => j.type === filter)]);
+  }, [filter]);
 
-  const handleAddPress = () => addJugada(filter);
-
+  const applyFilter = useCallback(
+    (newfilter) => {
+      setJugadas([...list.jugadas.filter((j) => j.type === newfilter)]);
+      setFilter(newfilter);
+    },
+    [filter],
+  );
+  console.log(jugadas.length);
+  console.log("ListEditor");
   return (
     <View style={{ flex: 1 }}>
-      <ListEditorHeader {...saldo} />
-      <Filters filter={filter} setFilter={setFilter} />
+      <ListEditorHeader saldo={list.saldo} />
+      <Filters filter={filter} setFilter={applyFilter} />
       <StyledButton
         text={"AÑADIR JUGADA"}
         handlePress={handleAddPress}
+        // enabled={true}
         enabled={getDrawIdFromDate() === list.drawId}
       />
-      <View style={{ paddingBottom: 0, flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <FlatList
-          data={list.jugadas}
+          data={jugadas}
           renderItem={({ item }) => (
             <JugadaButton
               jugada={item}
               update={updateJugada}
               deleteJugada={deleteJugada}
+              // isReadonly={false}
               isReadonly={getDrawIdFromDate() !== list.drawId}
               visible={item.type === filter}
             />
           )}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 50 }}
+          contentContainerStyle={{ paddingBottom: 200 }}
         />
       </View>
     </View>

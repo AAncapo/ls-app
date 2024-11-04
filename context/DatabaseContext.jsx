@@ -6,7 +6,7 @@ export const DatabaseContext = createContext();
 //Crear provider
 export function DatabaseProvider({ children }) {
   const [database, setDatabase] = useState({
-    user: "",
+    session: { user: "", active: false },
     lista: null,
   });
   return (

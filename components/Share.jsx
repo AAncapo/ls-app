@@ -15,7 +15,7 @@ const Share = ({ list, loading, setLoading }) => {
 
     setLoading(true);
     // Comprueba primero si el usuario sigue existiendo en el SERVER xd & si el pin es valido
-    getUser(database.user).then((res) => {
+    getUser(database.session.user).then((res) => {
       // Enviar lista si existe user en server
       if (res === undefined) {
         setLoading(false);

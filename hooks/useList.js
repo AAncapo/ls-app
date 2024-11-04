@@ -1,56 +1,55 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState } from "react";
 import { getDatetime } from "../libs/datetime-parser";
 import { ParseFloat } from "../libs/utils";
 import Jugada from "../classes/Jugada";
-// import { InteractionManager } from "react-native";
+import useDatabase from "./useDatabase";
 
-export default function useList(ls) {
-  const [list, setList] = useState(ls);
-  const [saldo, setSaldo] = useState(ls.saldo);
+export default function useList() {
+  const { database, updateList } = useDatabase();
+
+  // const [list, setList] = useState(database.lista);
 
   const addJugada = (filter) => {
     const newJugada = new Jugada(filter);
-    const lCopy = list;
+    const lCopy = database.lista;
     lCopy.jugadas = [newJugada, ...lCopy.jugadas];
-    setList({ ...lCopy });
+    updateList(lCopy);
   };
 
   const updateJugada = (jugada) => {
-    // InteractionManager.runAfterInteractions(() => {
-    const index = list.jugadas.findIndex((item) => item.id === jugada.id);
+    const { lista } = database;
+    const index = lista.jugadas.findIndex((item) => item.id === jugada.id);
     if (index !== -1) {
-      const updatedJugadas = list.jugadas.toSpliced(index, 1, jugada);
+      const updatedJugadas = lista.jugadas.toSpliced(index, 1, jugada);
 
-      let lCopy = list;
+      let lCopy = lista;
       lCopy.jugadas = [...updatedJugadas];
       // Update saldo
       lCopy.saldo = { ...updateSaldo(lCopy) };
-      setSaldo({ ...lCopy.saldo });
       lCopy.lastModified = getDatetime();
-      setList({ ...lCopy });
+      // setList({ ...lCopy });
+      updateList(lCopy);
     }
-    // });
   };
 
   const deleteJugada = (jugadaId) => {
-    const index = list.jugadas.findIndex((item) => item.id === jugadaId);
+    const { lista } = database;
+    const index = lista.jugadas.findIndex((item) => item.id === jugadaId);
     if (index !== -1) {
-      const updatedJugadas = list.jugadas.toSpliced(index, 1);
-      const lCopy = list;
+      const updatedJugadas = lista.jugadas.toSpliced(index, 1);
+      const lCopy = lista;
       lCopy.jugadas = [...updatedJugadas];
       // Update saldo
       lCopy.saldo = { ...updateSaldo(lCopy) };
-      setSaldo({ ...lCopy.saldo });
 
       lCopy.lastModified = getDatetime();
-      setList({ ...lCopy });
+      // setList({ ...lCopy });
+      updateList(lCopy);
     }
   };
 
   return {
-    list,
-    saldo,
+    list: database.lista,
     addJugada,
     updateJugada,
     deleteJugada,

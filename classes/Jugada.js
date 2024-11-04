@@ -12,27 +12,10 @@ class Jugada {
   premio = 0.0;
   creado = "";
 
-  constructor(
-    type,
-    id = "",
-    numeros = [],
-    jugador = "",
-    dinero_fijo = 0.0,
-    dinero_corrido = 0.0,
-    dinero_parlcent = 0.0,
-    premio = 0.0,
-    creado = "",
-  ) {
-    this.id = id !== "" ? id : genId();
-    this.creado = creado !== "" ? creado : getDatetime();
-
+  constructor(type) {
+    this.id = genId();
+    this.creado = getDatetime();
     this.type = type;
-    this.numeros = numeros;
-    this.jugador = jugador;
-    this.dinero_fijo = dinero_fijo;
-    this.dinero_corrido = dinero_corrido;
-    this.dinero_parlcent = dinero_parlcent;
-    this.premio = premio;
   }
 }
 

@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { toCurrency } from "../../libs/utils";
+// import useList from "../../hooks/useList";
 
-const ListEditorHeader = (saldo) => {
+const ListEditorHeader = ({ saldo }) => {
   return (
     <View
       style={{

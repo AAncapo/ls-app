@@ -4,26 +4,32 @@ import { StyleSheet, TextInput, View, Alert, Button, ActivityIndicator } from "r
 import { router } from "expo-router";
 import { useState, useEffect, useContext } from "react";
 
-import { getSession, updateSession } from "../libs/asyncstorage-handler";
+import { getFromStorage } from "../libs/asyncstorage-handler";
 import { getUser } from "../libs/jsonblob-api";
 import { DatabaseContext } from "../context/DatabaseContext";
+import useDatabase from "../hooks/useDatabase";
 
 // !!! El id se guarda en local y se carga de ahi pero al exportar listas siempre revisa el jsonBlob para comprobar que sigue siendo valido
 let inputPwd = "";
 
 export default function App() {
-  const { database, setDatabase } = useContext(DatabaseContext);
+  const { setDatabase } = useContext(DatabaseContext);
+  const { database, updateDatabase } = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getSession().then((res) => {
-      if (res === undefined) return;
-      if (res.active === "true") {
-        setDatabase({ ...database, user: res.user });
-        router.replace("./selector");
-      }
+    if (database.session.user) return; // para verificar si la db esta iniciada
+
+    getFromStorage("data").then((res) => {
+      if (res !== null) setDatabase({ ...res });
+      // console.log(res);
+      console.log("loading data from storage");
     });
   }, []);
+
+  useEffect(() => {
+    if (database.session.active) router.replace("/selector");
+  }, [database]);
 
   const handleSubmit = async () => {
     if (isLoading) return;
@@ -34,9 +40,7 @@ export default function App() {
     if (res !== undefined) {
       // User found -> OK
       setIsLoading(false);
-
-      updateSession(inputPwd, "true");
-      setDatabase({ ...database, user: inputPwd });
+      updateDatabase("session", { user: inputPwd, active: true });
       router.replace("./selector");
     } else {
       setIsLoading(false);
@@ -68,7 +72,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "gray",
+    backgroundColor: "lavender",
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
