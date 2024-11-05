@@ -3,12 +3,33 @@ import React, { memo, useState } from "react";
 
 import NumbersInput from "./NumbersInput";
 import { toCurrency } from "../../libs/utils";
+import Jugada from "../../classes/Jugada";
 
 const JugadaButton = memo(
-  function JugadaButton({ jugada, update, deleteJugada, isReadonly, visible }) {
+  function JugadaButton({
+    type,
+    numeros,
+    dinero_fijo,
+    dinero_corrido,
+    dinero_parlcent,
+    premio,
+    jugador,
+    update,
+    deleteJugada,
+    isReadonly,
+    visible,
+  }) {
     const [toggleDel, setToggleDel] = useState(false);
-    const type = jugada.type;
-    console.log("jugada");
+    // const type = jugada.type;
+    // console.log("jugada");
+    const jugada = new Jugada(type);
+    jugada.numeros = numeros;
+    jugada.dinero_fijo = dinero_fijo;
+    jugada.dinero_corrido = dinero_corrido;
+    jugada.dinero_parlcent = dinero_parlcent;
+    jugada.premio = premio;
+    jugada.jugador = jugador;
+
     const onNumbersUpdated = (updatedNums) => {
       jugada.numeros = updatedNums.filter((n) => !isNaN(parseInt(n)));
       update(jugada);

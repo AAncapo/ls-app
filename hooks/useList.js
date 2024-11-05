@@ -7,8 +7,6 @@ import useDatabase from "./useDatabase";
 export default function useList() {
   const { database, updateList } = useDatabase();
 
-  // const [list, setList] = useState(database.lista);
-
   const addJugada = (filter) => {
     const newJugada = new Jugada(filter);
     const lCopy = database.lista;

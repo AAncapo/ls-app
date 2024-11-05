@@ -13,26 +13,17 @@ import getDrawIdFromDate from "../../libs/datetime-parser";
 const ListEditor = () => {
   const { list, addJugada, updateJugada, deleteJugada } = useList();
   const [filter, setFilter] = useState("BOLA");
-  const [jugadas, setJugadas] = useState(list.jugadas.filter((j) => j.type === filter));
 
-  const handleAddPress = useCallback(() => {
-    addJugada(filter);
-    setJugadas([...list.jugadas.filter((j) => j.type === filter)]);
-  }, [filter]);
+  const handleAddPress = () => addJugada(filter);
 
-  const applyFilter = useCallback(
-    (newfilter) => {
-      setJugadas([...list.jugadas.filter((j) => j.type === newfilter)]);
-      setFilter(newfilter);
-    },
-    [filter],
-  );
-  console.log(jugadas.length);
-  console.log("ListEditor");
+  const jugadas = list.jugadas.filter((j) => j.type === filter);
+
+  // console.log(jugadas.length);
+  // console.log("ListEditor");
   return (
     <View style={{ flex: 1 }}>
       <ListEditorHeader saldo={list.saldo} />
-      <Filters filter={filter} setFilter={applyFilter} />
+      <Filters filter={filter} setFilter={setFilter} />
       <StyledButton
         text={"AÑADIR JUGADA"}
         handlePress={handleAddPress}
@@ -44,7 +35,14 @@ const ListEditor = () => {
           data={jugadas}
           renderItem={({ item }) => (
             <JugadaButton
-              jugada={item}
+              // jugada={item}
+              type={item.type}
+              numeros={item.numeros}
+              dinero_fijo={item.dinero_fijo}
+              dinero_corrido={item.dinero_corrido}
+              dinero_parlcent={item.dinero_parlcent}
+              premio={item.premio}
+              jugador={item.jugador}
               update={updateJugada}
               deleteJugada={deleteJugada}
               // isReadonly={false}
